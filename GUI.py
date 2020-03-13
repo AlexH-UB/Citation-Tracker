@@ -56,22 +56,26 @@ class add_GUI(QWidget):
 
         # Create two labels for index and the actual number
         grid.addWidget(QLabel('Label:'), 0, 0)
-        self.labeledit = QLineEdit(name)
-        grid.addWidget(self.labeledit, 0, 1)
+        self.nameedit = QLineEdit(name)
+        grid.addWidget(self.nameedit, 0, 1)
+
+        grid.addWidget(QLabel('Tags:'), 1, 0)
+        self.tagsedit = QLineEdit("")
+        grid.addWidget(self.tagsedit, 1, 1)
 
         # Create bibText field
         self.latexlab = QLabel('Latex:')
         self.latexlab.setAlignment(Qt.AlignTop)
-        grid.addWidget(self.latexlab, 1, 0)
+        grid.addWidget(self.latexlab, 2, 0)
         self.textedit = QTextEdit('')
-        grid.addWidget(self.textedit, 1, 1)
+        grid.addWidget(self.textedit, 2, 1)
 
         # Add two buttons
         self.accept = QPushButton('Add to Library')
         self.decline = QPushButton('Cancel')
         self.decline.clicked.connect(self.close)
-        grid.addWidget(self.decline, 2, 0)
-        grid.addWidget(self.accept, 2, 1)
+        grid.addWidget(self.decline, 3, 0)
+        grid.addWidget(self.accept, 3, 1)
 
 
         # Final steps
@@ -99,4 +103,4 @@ class custButton(QPushButton):
         print(e.mimeData().text()[7:])
         print(e.mimeData().text().split('/')[-1][:-4])
         self.parent.control.show_add(e.mimeData().text().split('/')[-1][:-4])
-        self.parent.control.get_filepath(e.mimeData().text()[7:])
+        self.parent.control.set_filepath(e.mimeData().text()[7:])

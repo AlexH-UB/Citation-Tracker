@@ -1,4 +1,4 @@
-import pprint
+from pprint import pprint
 import sys, os
 
 from bibtexparser.bparser import BibTexParser
@@ -7,36 +7,14 @@ from core import citation
 from GUI import main_GUI, afk_GUI, add_GUI
 from PyQt5.QtWidgets import QApplication
 import json
+from datetime import datetime
+
 
 '''
-
 TODO: Add general look (list widgets)
 TODO: Add new citation mode 
 TODO: Add search mode from button clicking afk gui
 TODO: Make drag and drop possible (afk_GUI)
-TODO: BibTex to Information parser -> Author etc. from Citation
-
-Example citation:
-
-@article{gayvert2016computational,
-title={A computational drug repositioning approach for targeting oncogenic transcription factors},
-author={Gayvert, Kaitlyn M and Dardenne, Etienne and Cheung, Cynthia and Boland, Mary Regina and Lorberbaum, Tal and Wanjala, Jackline and Chen, Yu and Rubin, Mark A and Tatonetti, Nicholas P and Rickman, David S and others},
-journal={Cell reports},
-volume={15},
-number={11},
-pages={2348--2356},
-year={2016},
-publisher={Elsevier}
-}
-
-= durch : ersetzen und den anfang abhaken -> eval function -> author
-
-Inx:            Name: 
-Bibtex:         Author:
-Access date:    Journal:        
-
-Cancel      Save
-
 '''
 
 
@@ -81,17 +59,22 @@ class control:
 
     def new_citation(self):
         if self.add.textedit.toPlainText()[0] == "@":
-            latex_dict = self.parse_latex(self.add.textedit.toPlainText())
-            num = self.get_next_index()
-            name = self.add.labeledit.toPlainText()
-            fp = self.fp
-            # citation(num, name, fp, )
+            bibtex_dict = self.parse_latex(self.add.textedit.toPlainText())
+            ind = self.get_next_index()
+            label = self.add.nameedit.text()
+            tags = self.add.tagsedit.text().split(',')
+            self.all_citations.append(citation(ind, label, self.fp, tags, datetime(), bibtex_dict))
+            pprint(bibtex_dict)
+            pprint(self.all_citations)
 
-    def get_filepath(self, fp):
-        self.fp = fp
+    def set_filepath(self, filepath):
+        self.fp = filepath
 
 
-"""@article{gayvert2016computational,
+"""
+Example citation:
+
+@article{gayvert2016computational,
 title={A computational drug repositioning approach for targeting oncogenic transcription factors},
 author={Gayvert, Kaitlyn M and Dardenne, Etienne and Cheung, Cynthia and Boland, Mary Regina and Lorberbaum, Tal and Wanjala, Jackline and Chen, Yu and Rubin, Mark A and Tatonetti, Nicholas P and Rickman, David S and others},
 journal={Cell reports},
@@ -100,10 +83,9 @@ number={11},
 pages={2348--2356},
 year={2016},
 publisher={Elsevier}
-}"""
+}
 
-
-
+"""
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
