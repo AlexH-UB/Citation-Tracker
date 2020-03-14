@@ -1,3 +1,6 @@
+from os.path import expanduser
+
+
 # Constants
 
 EXAMPLE_CITATION = '@article{gayvert2016computational, ' \
@@ -21,5 +24,10 @@ LABEL_BIBTEX = 'BibTex:'
 # Color themes
 
 BUTTON_COLOR_THEME1 = ('slategray', 'white')
+
+# Folders
+HOME = expanduser("~")
+CITATION_SAVE = HOME + "/.citations"
+SAVE_JSON = CITATION_SAVE + "/save.json"
 
 

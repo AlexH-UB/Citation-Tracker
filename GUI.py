@@ -1,5 +1,5 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QGridLayout, QTextEdit, QGroupBox, QDesktopWidget
+from PyQt5.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QGridLayout, QTextEdit, QCheckBox, QDesktopWidget
 from PyQt5 import QtCore
 from constants import EXAMPLE_CITATION, TITLE_ADD, TITLE_MAIN, LABEL_NAME, LABEL_TAGS, LABEL_BIBTEX
 
@@ -78,10 +78,13 @@ class add_GUI(QWidget):
         # Add Accept and cancel button
         self.accept = QPushButton('Add to Library')
         self.decline = QPushButton('Cancel')
+        self.move = QCheckBox('Move file')
+        self.move.setChecked(True)
+
         self.decline.clicked.connect(self.close)
         grid.addWidget(self.decline, 3, 0)
         grid.addWidget(self.accept, 3, 1)
-
+        grid.addWidget(self.move, 3, 2)
 
         # Final init steps
         self.setLayout(grid)

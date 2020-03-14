@@ -1,7 +1,7 @@
 
 class citation:
 
-    def __init__(self, index: int, name: str, path: str, tags: list, access, bibTex: dict):
+    def __init__(self,index: int, name: str, path: str, tags: list, access, bibtex: dict):
         """A citation is the basic storing unit of the tool.
 
         :param index: all citations are indexed with numbers in ascending order
@@ -16,7 +16,7 @@ class citation:
         self.path = path
         self.tags = tags
         self.access = access
-        self.bibTex = bibTex
+        self.bibtex = bibtex
 
     def get_index(self) -> int:
         return self.index
@@ -27,11 +27,14 @@ class citation:
     def get_path(self) -> str:
         return self.path
 
+    def set_path(self, path):
+        self.path = path
+
     def get_tags(self) -> list:
         return self.tags
 
     def get_bibtex(self) -> dict:
-        return self.bibTex
+        return self.bibtex
 
     def get_dict(self) -> dict:
         """ Returns a dictionary with all information of the citation
@@ -42,6 +45,6 @@ class citation:
                 'name': self.name,
                 'path': self.path,
                 'tags': self.tags,
-                'access:': self.access,
-                'latex': self.bibTex,
+                'access': self.access,
+                'bibtex': self.bibtex,
                 }

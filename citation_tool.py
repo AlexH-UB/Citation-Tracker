@@ -1,15 +1,16 @@
-# Own stuff
-from constants import BUTTON_COLOR_THEME1
-from core import citation
-from GUI import main_GUI, afk_GUI, add_GUI
-
 # External libraries
-
+import pprint
 import sys
 import json
 from bibtexparser.bparser import BibTexParser
 from PyQt5.QtWidgets import QApplication
 from time import asctime
+from os import path, mkdir, rename
+
+# Own stuff
+from constants import BUTTON_COLOR_THEME1, CITATION_SAVE, SAVE_JSON
+from core import citation
+from GUI import main_GUI, afk_GUI, add_GUI
 
 
 class control:
@@ -17,8 +18,8 @@ class control:
     # Initialization of windows
 
     def __init__(self):
-        # Init citations list
-        self.all_citations = {}
+        # Init citations
+        self.all_citations = self.open_citations()
         self.fp = None
 
         # Init afk control gui
@@ -29,11 +30,28 @@ class control:
         # When the button is clicked the main window opens
         self.afk.button.clicked.connect(self.show_main)
 
+    def open_citations(self) -> dict:
+        # Create save folder and json save file if not there
+        if not path.exists(CITATION_SAVE):
+            mkdir(CITATION_SAVE)
+            with open(SAVE_JSON, 'w') as f:
+                json.dump(' ', f)
+        else:
+            with open(SAVE_JSON, 'r') as f:
+                dic = json.load(f)
+                if dic != ' ':
+                    for ind, cits in dic.items():
+                        dic[ind] = citation(cits['id'], cits['name'],
+                                            cits['path'], cits['tags'],
+                                            cits['access'], cits['bibtex'])
+                    return dic
+        return {}
+
     def show_main(self):
         self.main = main_GUI((500, 500), self)
 
     def show_add(self, name: str):
-        self.add = add_GUI((400, 400), self, name)
+        self.add = add_GUI((600, 500), self, name)
         self.add.accept.clicked.connect(self.new_citation)
 
     def get_next_index(self):
@@ -60,9 +78,11 @@ class control:
 
             # Check if citation is in list already
             if self.check_for_duplicate(cit):
+                if self.add.move.isChecked():
+                    cit.set_path(CITATION_SAVE + '/' + self.fp.split('/')[-1])
+                    rename(self.fp, cit.get_path())
                 self.all_citations[cit.get_index()] = cit
-                print(f"Added citation '{cit.get_name()}'.")
-                self.dump_to_json('./Savespace/test1.json')
+                self.dump_to_json()
 
             # update number of citations in the GUI
             self.afk.update_num_citations()
@@ -78,9 +98,10 @@ class control:
 
     # Save citations to json file
 
-    def dump_to_json(self, filep: str):
-        with open(filep, "w") as file:
-            json.dump(self.all_citations, file)
+    def dump_to_json(self):
+        with open(SAVE_JSON, "w") as file:
+            dic = {key: value.get_dict() for key, value in self.all_citations.items()}
+            json.dump(dic, file)
 
 
 if __name__ == '__main__':
