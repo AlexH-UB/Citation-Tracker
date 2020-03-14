@@ -18,7 +18,22 @@ class citation:
         self.access = access
         self.bibTex = bibTex
 
-    def to_dict(self):
+    def get_index(self) -> int:
+        return self.index
+
+    def get_name(self) -> str:
+        return self.name
+
+    def get_path(self) -> str:
+        return self.path
+
+    def get_tags(self) -> list:
+        return self.tags
+
+    def get_bibtex(self) -> dict:
+        return self.bibTex
+
+    def get_dict(self) -> dict:
         """ Returns a dictionary with all information of the citation
 
         :return: dict
