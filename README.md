@@ -12,14 +12,16 @@ Create an easy to use drag and drop application that keeps track of your article
 * Save articles with one drag and drop action
 * Add tags to your documents to make them easier to find 
 * Retrieve the BibTex citation of your article
+* Open articles with a double click
 
 ---
 
 ### Todo:
 
-* [ ] Open articles via the GUI
+* [x] Open articles via the GUI
 * [ ] Write search algorithm
-* [ ] Write correct functions to store articles
+* [x] Write correct functions to store articles
 * [ ] Find URL to BibTex python library and integrate it 
+* [ ] Design Icon
 
 ---

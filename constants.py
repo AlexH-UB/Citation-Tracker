@@ -10,10 +10,14 @@ EXAMPLE_CITATION = '@article{gayvert2016computational, ' \
                    'Rickman, David S and others}, journal={Cell reports}, volume={15}, number={11}, ' \
                    'pages={2348--2356}, year={2016}, publisher={Elsevier}}'
 
+VERSION = "beta 1.0"
+NAME = f"Alex's Citation Manager Version {VERSION}"
+FONT_SIZE = 11
+
 # Window titles
 
-TITLE_ADD = 'GUI for adding citations'
-TITLE_MAIN = 'main_GUI'
+TITLE_MAIN = f'Main Interaction Point - {NAME}'
+TITLE_ADD = f'Add a Citation - {NAME}'
 
 # GUI labels names
 

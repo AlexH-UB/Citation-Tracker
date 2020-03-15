@@ -1,5 +1,6 @@
 # External libraries
 import pprint
+import subprocess
 import sys
 import json
 from bibtexparser.bparser import BibTexParser
@@ -37,18 +38,63 @@ class control:
             with open(SAVE_JSON, 'w') as f:
                 json.dump(' ', f)
         else:
-            with open(SAVE_JSON, 'r') as f:
-                dic = json.load(f)
-                if dic != ' ':
-                    for ind, cits in dic.items():
-                        dic[ind] = citation(cits['id'], cits['name'],
-                                            cits['path'], cits['tags'],
-                                            cits['access'], cits['bibtex'])
-                    return dic
+            if not path.exists(SAVE_JSON):
+                with open(SAVE_JSON, 'w') as f:
+                    json.dump(' ', f)
+            else:
+                with open(SAVE_JSON, 'r') as f:
+                    dic = json.load(f)
+                    if dic != ' ':
+                        for ind, cits in dic.items():
+                            dic[ind] = citation(cits['id'], cits['name'],
+                                                cits['path'], cits['tags'],
+                                                cits['access'], cits['bibtex'])
+                        return dic
         return {}
 
     def show_main(self):
-        self.main = main_GUI((500, 500), self)
+        self.main = main_GUI((1500, 800), self)
+        self.main.pop_list(self.create_fstrings())
+        self.main.citation_list.itemDoubleClicked.connect(self.open_pdf)
+
+    def open_pdf(self):
+        clicked_index = self.main.citation_list.currentItem().text()[2]
+        filepath = self.all_citations[clicked_index].get_path()
+
+        # Opening the files only works on linux yet
+        if sys.platform == 'linux':
+            subprocess.call(["xdg-open", filepath])
+
+    def create_fstrings(self) -> list:
+        res = []
+        for key, value in self.all_citations.items():
+
+            # Index
+            index_part = f'\n {str(key)}' + (2 * ' ' if int(key) > 9 else ' ')
+            # Name
+            name = value.get_name()
+            name_part = f'| {(name[:10] if len(name) > 9 else name + " "*10-len(name))} '
+            # Tags
+            tags = value.get_tags()
+            tags_part = '| '
+            for tag in tags:
+                if tag != '':
+                    tags_part += f'[{tag}] '
+            if tags_part == '| ':
+                tags_part += 'no tags were assigned!'
+            tags_part += ' '*(60-len(tags_part))
+            # Year
+            year_part = f'| {value.get_bibtex()["year"]} |\n'
+            # Authors
+            authors = value.get_bibtex()["author"]
+            author_part = f'| {authors}' + " "*(40-len(authors)) if len(authors) < 40 else f'| {authors[:38]}.. '
+            # Title
+            title = value.get_bibtex()["title"]
+            title_part = f'| {title}' + " "*(60-len(title)) if len(title) < 60 else f'| {title[:58]}.. '
+
+            res.append(f'{index_part}{name_part}{tags_part}{title_part}{author_part}{year_part}')
+
+        return res
 
     def show_add(self, name: str):
         self.add = add_GUI((600, 500), self, name)

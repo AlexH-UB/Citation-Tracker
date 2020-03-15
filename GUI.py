@@ -1,7 +1,9 @@
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QGridLayout, QTextEdit, QCheckBox, QDesktopWidget
+from PyQt5.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QGridLayout, QTextEdit, QCheckBox, \
+    QDesktopWidget, QMainWindow, QListWidget, QListWidgetItem
 from PyQt5 import QtCore
-from constants import EXAMPLE_CITATION, TITLE_ADD, TITLE_MAIN, LABEL_NAME, LABEL_TAGS, LABEL_BIBTEX
+from PyQt5.QtGui import QFont
+from constants import EXAMPLE_CITATION, TITLE_ADD, TITLE_MAIN, LABEL_NAME, LABEL_TAGS, LABEL_BIBTEX, FONT_SIZE
 
 
 class afk_GUI(QWidget):
@@ -33,7 +35,7 @@ class afk_GUI(QWidget):
         self.button.setText(str(self.control.get_next_index()))
 
 
-class main_GUI(QWidget):
+class main_GUI(QMainWindow):
 
     def __init__(self, wh, control):
         super().__init__()
@@ -43,9 +45,37 @@ class main_GUI(QWidget):
         self.setWindowTitle(TITLE_MAIN)
         self.control = control
 
-        # Hier kommt alles vom main window hin
+        # Init menu bar
+        menu = self.menuBar()
+        menu.addMenu("File")
 
+        # Init of main window stuff
+        maingrid = QGridLayout()
+        maingrid.setSpacing(50)
+
+        toplayout = QGridLayout()
+        maingrid.addLayout(toplayout, 0, 0)
+        toplayout.addWidget(QLabel("test"), 0, 0)
+        toplayout.addWidget(QLabel("test"), 0, 1)
+        toplayout.addWidget(QLabel("test"), 0, 2)
+
+        toplayout.addWidget(QLabel("test"), 1, 0)
+        toplayout.addWidget(QLabel("test"), 1, 1)
+        toplayout.addWidget(QLabel("test"), 1, 2)
+
+        self.citation_list = QListWidget()
+        font = QFont()
+        font.setPointSize(FONT_SIZE)
+        self.citation_list.setFont(font)
+
+        maingrid.addWidget(self.citation_list, 1, 0)
+        wid = QWidget(self)
+        self.setCentralWidget(wid)
+        wid.setLayout(maingrid)
         self.show()
+
+    def pop_list(self, names: list):
+        self.citation_list.addItems(names)
 
 
 class add_GUI(QWidget):
