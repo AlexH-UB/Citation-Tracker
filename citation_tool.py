@@ -11,7 +11,7 @@ from os import path, mkdir, rename
 # Own stuff
 from constants import BUTTON_COLOR_THEME1, CITATION_SAVE, SAVE_JSON
 from core import citation
-from GUI import main_GUI, afk_GUI, add_GUI
+from GUI import main_GUI, afk_GUI, add_GUI, export_GUI
 
 
 class control:
@@ -22,11 +22,13 @@ class control:
         # Init citations
         self.all_citations = self.open_citations()
         self.fp = None
+        self.screensize = None
 
         # Init afk control gui
         self.afk = afk_GUI(size=(50, 50), color=BUTTON_COLOR_THEME1, control=self)
         self.main = None
         self.add = None
+        self.export = None
 
         # When the button is clicked the main window opens
         self.afk.button.clicked.connect(self.show_main)
@@ -53,9 +55,19 @@ class control:
         return {}
 
     def show_main(self):
-        self.main = main_GUI((1500, 800), self)
+        self.main = main_GUI((1450, 650), self)
         self.main.pop_list(self.create_fstrings())
+
+        # Setting actions for main window
         self.main.citation_list.itemDoubleClicked.connect(self.open_pdf)
+        self.main.export.triggered.connect(self.show_export)
+
+    def show_export(self):
+        self.export = export_GUI((400, 650), self)
+        mainpos = self.main.pos()
+        # Relocate the export window
+        mainsize = self.main.geometry()
+        self.export.relocate(mainpos.x() + mainsize.width() + 6, mainpos.y() + 29)
 
     def open_pdf(self):
         clicked_index = self.main.citation_list.currentItem().text()[2]
@@ -98,7 +110,10 @@ class control:
 
     def show_add(self, name: str):
         self.add = add_GUI((600, 500), self, name)
+
+        # Add connections
         self.add.accept.clicked.connect(self.new_citation)
+        self.add.decline.clicked.connect(self.close)
 
     def get_next_index(self):
         return len(self.all_citations)

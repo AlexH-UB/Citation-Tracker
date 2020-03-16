@@ -18,6 +18,7 @@ FONT_SIZE = 11
 
 TITLE_MAIN = f'Main Interaction Point - {NAME}'
 TITLE_ADD = f'Add a Citation - {NAME}'
+TITLE_EXPORT = 'Export your citations'
 
 # GUI labels names
 

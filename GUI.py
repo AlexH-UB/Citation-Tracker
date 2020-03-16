@@ -3,7 +3,8 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QGridLayout
     QDesktopWidget, QMainWindow, QListWidget, QListWidgetItem
 from PyQt5 import QtCore
 from PyQt5.QtGui import QFont
-from constants import EXAMPLE_CITATION, TITLE_ADD, TITLE_MAIN, LABEL_NAME, LABEL_TAGS, LABEL_BIBTEX, FONT_SIZE
+from constants import EXAMPLE_CITATION, TITLE_ADD, TITLE_MAIN, LABEL_NAME, LABEL_TAGS, LABEL_BIBTEX, FONT_SIZE, \
+    TITLE_EXPORT
 
 
 class afk_GUI(QWidget):
@@ -26,9 +27,9 @@ class afk_GUI(QWidget):
         self.show()
 
     def move_window(self):
-        screen = QDesktopWidget().screenGeometry()
+        self.control.screensize = QDesktopWidget().screenGeometry()
         widget = self.geometry()
-        x = screen.width() - widget.width()
+        x = self.control.screensize.width() - widget.width()
         self.move(x, 0)
 
     def update_num_citations(self):
@@ -46,8 +47,8 @@ class main_GUI(QMainWindow):
         self.control = control
 
         # Init menu bar
-        menu = self.menuBar()
-        menu.addMenu("File")
+        menu = self.menuBar().addMenu('File')
+        self.export = menu.addAction("Export")
 
         # Init of main window stuff
         maingrid = QGridLayout()
@@ -57,11 +58,11 @@ class main_GUI(QMainWindow):
         maingrid.addLayout(toplayout, 0, 0)
         toplayout.addWidget(QLabel("test"), 0, 0)
         toplayout.addWidget(QLabel("test"), 0, 1)
-        toplayout.addWidget(QLabel("test"), 0, 2)
+        toplayout.addWidget(QLabel("Searchbar"), 0, 2)
 
         toplayout.addWidget(QLabel("test"), 1, 0)
         toplayout.addWidget(QLabel("test"), 1, 1)
-        toplayout.addWidget(QLabel("test"), 1, 2)
+        toplayout.addWidget(QLabel("Filter stuff"), 1, 2)
 
         self.citation_list = QListWidget()
         font = QFont()
@@ -111,7 +112,6 @@ class add_GUI(QWidget):
         self.move = QCheckBox('Move file')
         self.move.setChecked(True)
 
-        self.decline.clicked.connect(self.close)
         grid.addWidget(self.decline, 3, 0)
         grid.addWidget(self.accept, 3, 1)
         grid.addWidget(self.move, 3, 2)
@@ -122,6 +122,44 @@ class add_GUI(QWidget):
         self.control = control
 
         self.show()
+
+
+class export_GUI(QWidget):
+
+    def __init__(self, wh, control):
+        super().__init__()
+
+        # Setting up the side GUI
+        self.setFixedSize(wh[0], wh[1])
+        self.setWindowTitle(TITLE_EXPORT)
+        self.control = control
+
+        grid = QGridLayout()
+        grid.setSpacing(30)
+        self.label2 = QLabel("Whatup this is label 2waegwegweg4wge4wg4wg4w4gwgwg4wg4")
+        self.exp_cit_widget = QListWidget()
+        self.copy_button = QPushButton()
+        self.export_button = QPushButton()
+        self.push_right = QPushButton("->")
+        self.push_left = QPushButton("<-")
+
+        # Setting the widgets up on the GUI
+        #grid.addWidget(self.label2, 0, 0, 1, 2)
+        grid.addWidget(self.exp_cit_widget, 0, 1, 4, 2)
+        grid.addWidget(self.push_right, 1, 0)
+        grid.addWidget(self.push_left, 2, 0)
+        grid.addWidget(self.copy_button, 4, 1)
+        grid.addWidget(self.export_button, 4, 2)
+
+        grid.setColumnStretch(0, 0.5)
+        grid.setColumnStretch(1, 2)
+        grid.setColumnStretch(2, 2)
+
+        self.setLayout(grid)
+        self.show()
+
+    def relocate(self, x, y):
+        self.move(x, y)
 
 
 class dnd_button(QPushButton):
