@@ -1,10 +1,12 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QGridLayout, QTextEdit, QCheckBox, \
-    QDesktopWidget, QMainWindow, QListWidget, QListWidgetItem
+    QDesktopWidget, QMainWindow, QListWidget, QListWidgetItem, QTableWidget, QTableWidgetItem, QTableView
+
 from PyQt5 import QtCore
 from PyQt5.QtGui import QFont
+
 from constants import EXAMPLE_CITATION, TITLE_ADD, TITLE_MAIN, LABEL_NAME, LABEL_TAGS, LABEL_BIBTEX, FONT_SIZE, \
-    TITLE_EXPORT
+    TITLE_EXPORT, LABEL_TABLE
 
 
 class afk_GUI(QWidget):
@@ -64,10 +66,22 @@ class main_GUI(QMainWindow):
         toplayout.addWidget(QLabel("test"), 1, 1)
         toplayout.addWidget(QLabel("Filter stuff"), 1, 2)
 
-        self.citation_list = QListWidget()
+        self.citation_list = QTableWidget(6, 6)
+        self.citation_list.setSelectionBehavior(QTableView.SelectRows)
         font = QFont()
         font.setPointSize(FONT_SIZE)
         self.citation_list.setFont(font)
+        self.citation_list.setHorizontalHeaderLabels(LABEL_TABLE)
+
+        # Column widths
+        self.citation_list.setColumnWidth(0, 60)
+        self.citation_list.setColumnWidth(1, 150)
+        self.citation_list.setColumnWidth(2, 400)
+        self.citation_list.setColumnWidth(3, 350)
+        self.citation_list.setColumnWidth(4, 400)
+        self.citation_list.setColumnWidth(5, 70)
+        self.citation_list.verticalHeader().setVisible(False)
+        self.citation_list.setEditTriggers(QTableWidget.NoEditTriggers)
 
         maingrid.addWidget(self.citation_list, 1, 0)
         wid = QWidget(self)
@@ -76,7 +90,15 @@ class main_GUI(QMainWindow):
         self.show()
 
     def pop_list(self, names: list):
-        self.citation_list.addItems(names)
+        # list of lists
+        self.citation_list.setRowCount(len(names))
+        for ind, value in enumerate(names):
+            for ind2, value2 in enumerate(value):
+                item = QTableWidgetItem(str(value2))
+                if ind2 == 0 or ind2 == 5:
+                    item.setTextAlignment(Qt.AlignCenter)
+                self.citation_list.setItem(ind, ind2, item)
+
 
 
 class add_GUI(QWidget):
@@ -136,22 +158,19 @@ class export_GUI(QWidget):
 
         grid = QGridLayout()
         grid.setSpacing(30)
-        self.label2 = QLabel("Whatup this is label 2waegwegweg4wge4wg4wg4w4gwgwg4wg4")
         self.exp_cit_widget = QListWidget()
-        self.copy_button = QPushButton()
-        self.export_button = QPushButton()
+        self.copy_button = QPushButton('Copy')
+        self.export_button = QPushButton('Export to BibTex')
         self.push_right = QPushButton("->")
         self.push_left = QPushButton("<-")
 
         # Setting the widgets up on the GUI
-        #grid.addWidget(self.label2, 0, 0, 1, 2)
         grid.addWidget(self.exp_cit_widget, 0, 1, 4, 2)
         grid.addWidget(self.push_right, 1, 0)
         grid.addWidget(self.push_left, 2, 0)
         grid.addWidget(self.copy_button, 4, 1)
         grid.addWidget(self.export_button, 4, 2)
 
-        grid.setColumnStretch(0, 0.5)
         grid.setColumnStretch(1, 2)
         grid.setColumnStretch(2, 2)
 

@@ -3,13 +3,15 @@ import pprint
 import subprocess
 import sys
 import json
+
+from bibtexparser.bibdatabase import BibDataStringExpression
 from bibtexparser.bparser import BibTexParser
 from PyQt5.QtWidgets import QApplication
 from time import asctime
 from os import path, mkdir, rename
 
 # Own stuff
-from constants import BUTTON_COLOR_THEME1, CITATION_SAVE, SAVE_JSON
+from constants import BUTTON_COLOR_THEME1, CITATION_SAVE, SAVE_JSON, SIZE_MAIN, SIZE_ADD, SIZE_AFK, SIZE_EXP
 from core import citation
 from GUI import main_GUI, afk_GUI, add_GUI, export_GUI
 
@@ -25,7 +27,7 @@ class control:
         self.screensize = None
 
         # Init afk control gui
-        self.afk = afk_GUI(size=(50, 50), color=BUTTON_COLOR_THEME1, control=self)
+        self.afk = afk_GUI(SIZE_AFK, color=BUTTON_COLOR_THEME1, control=self)
         self.main = None
         self.add = None
         self.export = None
@@ -55,65 +57,66 @@ class control:
         return {}
 
     def show_main(self):
-        self.main = main_GUI((1450, 650), self)
-        self.main.pop_list(self.create_fstrings())
-
+        self.main = main_GUI(SIZE_MAIN, self)
+        fin = []
+        for ind, element in self.all_citations.items():
+            fin.append(self.gen_show_name(ind))
+        self.main.pop_list(fin)
         # Setting actions for main window
         self.main.citation_list.itemDoubleClicked.connect(self.open_pdf)
         self.main.export.triggered.connect(self.show_export)
 
     def show_export(self):
-        self.export = export_GUI((400, 650), self)
+        self.export = export_GUI(SIZE_EXP, self)
         mainpos = self.main.pos()
         # Relocate the export window
         mainsize = self.main.geometry()
         self.export.relocate(mainpos.x() + mainsize.width() + 6, mainpos.y() + 29)
 
     def open_pdf(self):
-        clicked_index = self.main.citation_list.currentItem().text()[2]
+        clicked_index = self.main.citation_list.selectedItems()[0].text()
         filepath = self.all_citations[clicked_index].get_path()
 
         # Opening the files only works on linux yet
         if sys.platform == 'linux':
             subprocess.call(["xdg-open", filepath])
 
-    def create_fstrings(self) -> list:
-        res = []
-        for key, value in self.all_citations.items():
+    def gen_show_name(self, cit_index: int) -> list:
+        key = cit_index
+        value = self.all_citations[key]
 
-            # Index
-            index_part = f'\n {str(key)}' + (2 * ' ' if int(key) > 9 else ' ')
-            # Name
-            name = value.get_name()
-            name_part = f'| {(name[:10] if len(name) > 9 else name + " "*10-len(name))} '
-            # Tags
-            tags = value.get_tags()
-            tags_part = '| '
-            for tag in tags:
-                if tag != '':
-                    tags_part += f'[{tag}] '
-            if tags_part == '| ':
-                tags_part += 'no tags were assigned!'
-            tags_part += ' '*(60-len(tags_part))
-            # Year
-            year_part = f'| {value.get_bibtex()["year"]} |\n'
-            # Authors
-            authors = value.get_bibtex()["author"]
-            author_part = f'| {authors}' + " "*(40-len(authors)) if len(authors) < 40 else f'| {authors[:38]}.. '
-            # Title
-            title = value.get_bibtex()["title"]
-            title_part = f'| {title}' + " "*(60-len(title)) if len(title) < 60 else f'| {title[:58]}.. '
+        # Index
+        index_part = f'\n {str(key)}' + (2 * ' ' if int(key) > 9 else ' ')
+        # Name
+        name = value.get_name()
+        name_part = f'| {(name[:10] if len(name) > 9 else name + " "*10-len(name))} '
+        # Tags
+        tags = value.get_tags()
+        tags_part = '| '
+        for tag in tags:
+            if tag != '':
+                tags_part += f'[{tag}] '
+        if tags_part == '| ':
+            tags_part += 'no tags were assigned!'
+        tags_part += ' '*(60-len(tags_part))
+        # Year
+        year_part = f'| {value.get_bibtex()["year"]} |\n'
+        # Authors
+        authors = value.get_bibtex()["author"]
+        author_part = f'| {authors}' + " "*(40-len(authors)) if len(authors) < 40 else f'| {authors[:38]}.. '
+        # Title
+        title = value.get_bibtex()["title"]
+        title_part = f'| {title}' + " "*(60-len(title)) if len(title) < 60 else f'| {title[:58]}.. '
 
-            res.append(f'{index_part}{name_part}{tags_part}{title_part}{author_part}{year_part}')
-
-        return res
+        #return f'{index_part}{name_part}{tags_part}{title_part}{author_part}{year_part}'
+        return [key, name, tags, title, authors, value.get_bibtex()["year"]]
 
     def show_add(self, name: str):
-        self.add = add_GUI((600, 500), self, name)
+        self.add = add_GUI(SIZE_ADD, self, name)
 
         # Add connections
         self.add.accept.clicked.connect(self.new_citation)
-        self.add.decline.clicked.connect(self.close)
+        self.add.decline.clicked.connect(self.add.close)
 
     def get_next_index(self):
         return len(self.all_citations)
@@ -121,7 +124,7 @@ class control:
     # Add citations
 
     def parse_latex(self, bibtexstr: str):
-        bp = BibTexParser(interpolate_strings=False)
+        bp = BibTexParser(common_strings=True)
         bib_database = bp.parse(bibtexstr)
         return bib_database.entries[0]
 
@@ -147,6 +150,7 @@ class control:
 
             # update number of citations in the GUI
             self.afk.update_num_citations()
+            self.add.close()
 
     def set_filepath(self, filep: str):
         self.fp = filep

@@ -3,12 +3,19 @@ from os.path import expanduser
 
 # Constants
 
-EXAMPLE_CITATION = '@article{gayvert2016computational, ' \
-                   'title={A computational drug repositioning approach for targeting oncogenic transcription factors},' \
-                   'author={Gayvert, Kaitlyn M and Dardenne, Etienne and Cheung, Cynthia and Boland, Mary Regina and' \
-                   ' Lorberbaum, Tal and Wanjala, Jackline and Chen, Yu and Rubin, Mark A and Tatonetti, Nicholas P and' \
-                   'Rickman, David S and others}, journal={Cell reports}, volume={15}, number={11}, ' \
-                   'pages={2348--2356}, year={2016}, publisher={Elsevier}}'
+EXAMPLE_CITATION = '@article{Becker2010,' \
+                   '  doi = {10.1038/nature08698},' \
+                   '  url = {https://doi.org/10.1038/nature08698},' \
+                   '  year = {2010},' \
+                   '  month = jan,' \
+                   '  publisher = {Springer Science and Business Media {LLC}},' \
+                   '  volume = {463},' \
+                   '  number = {7279},' \
+                   '  pages = {369--373},' \
+                   '  author = {Thomas Becker and Gerrit Loch and Marc Beyer and Ingo Zinke and Anna C. Aschenbrenner' \
+                   ' and Pilar Carrera and Therese Inhester and Joachim L. Schultze and Michael Hoch}, ' \
+                   '  title = {{FOXO}-dependent regulation of innate immune homeostasis},' \
+                   '  journal = {Nature}}'
 
 VERSION = "beta 1.0"
 NAME = f"Alex's Citation Manager Version {VERSION}"
@@ -20,11 +27,19 @@ TITLE_MAIN = f'Main Interaction Point - {NAME}'
 TITLE_ADD = f'Add a Citation - {NAME}'
 TITLE_EXPORT = 'Export your citations'
 
+# Window Sizes
+
+SIZE_MAIN = (1450, 650)
+SIZE_ADD = (600, 500)
+SIZE_EXP = (400, SIZE_MAIN[1])
+SIZE_AFK = (50, 50)
+
 # GUI labels names
 
 LABEL_NAME = 'Label:'
 LABEL_TAGS = 'Tags:'
 LABEL_BIBTEX = 'BibTex:'
+LABEL_TABLE = ["index", "name", "tags", "title", "authors", "year"]
 
 # Color themes
 
