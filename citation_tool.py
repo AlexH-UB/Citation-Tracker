@@ -84,32 +84,17 @@ class control:
     def gen_show_name(self, cit_index: int) -> list:
         key = cit_index
         value = self.all_citations[key]
-
-        # Index
-        index_part = f'\n {str(key)}' + (2 * ' ' if int(key) > 9 else ' ')
-        # Name
         name = value.get_name()
-        name_part = f'| {(name[:10] if len(name) > 9 else name + " "*10-len(name))} '
-        # Tags
         tags = value.get_tags()
-        tags_part = '| '
+        tags_part = ''
         for tag in tags:
             if tag != '':
                 tags_part += f'[{tag}] '
-        if tags_part == '| ':
+        if tags_part == '':
             tags_part += 'no tags were assigned!'
-        tags_part += ' '*(60-len(tags_part))
-        # Year
-        year_part = f'| {value.get_bibtex()["year"]} |\n'
-        # Authors
         authors = value.get_bibtex()["author"]
-        author_part = f'| {authors}' + " "*(40-len(authors)) if len(authors) < 40 else f'| {authors[:38]}.. '
-        # Title
         title = value.get_bibtex()["title"]
-        title_part = f'| {title}' + " "*(60-len(title)) if len(title) < 60 else f'| {title[:58]}.. '
-
-        #return f'{index_part}{name_part}{tags_part}{title_part}{author_part}{year_part}'
-        return [key, name, tags, title, authors, value.get_bibtex()["year"]]
+        return [key, name, tags_part, title, authors, value.get_bibtex()["year"]]
 
     def show_add(self, name: str):
         self.add = add_GUI(SIZE_ADD, self, name)

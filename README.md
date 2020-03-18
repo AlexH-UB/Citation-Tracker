@@ -23,5 +23,6 @@ Create an easy to use drag and drop application that keeps track of your article
 * [x] Write correct functions to store articles
 * [ ] Find URL to BibTex python library and integrate it 
 * [ ] Design Icon
+* [ ] Small list widget with all tags sorted by popularity
 
 ---

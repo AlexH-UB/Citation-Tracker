@@ -1,6 +1,6 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QGridLayout, QTextEdit, QCheckBox, \
-    QDesktopWidget, QMainWindow, QListWidget, QListWidgetItem, QTableWidget, QTableWidgetItem, QTableView
+    QDesktopWidget, QMainWindow, QListWidget, QListWidgetItem, QTableWidget, QTableWidgetItem, QTableView, QComboBox
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QFont
@@ -60,11 +60,11 @@ class main_GUI(QMainWindow):
         maingrid.addLayout(toplayout, 0, 0)
         toplayout.addWidget(QLabel("test"), 0, 0)
         toplayout.addWidget(QLabel("test"), 0, 1)
-        toplayout.addWidget(QLabel("Searchbar"), 0, 2)
+        toplayout.addWidget(QLineEdit("Searchbar"), 0, 2)
 
         toplayout.addWidget(QLabel("test"), 1, 0)
         toplayout.addWidget(QLabel("test"), 1, 1)
-        toplayout.addWidget(QLabel("Filter stuff"), 1, 2)
+        toplayout.addWidget(QComboBox(), 1, 2)
 
         self.citation_list = QTableWidget(6, 6)
         self.citation_list.setSelectionBehavior(QTableView.SelectRows)
