@@ -6,6 +6,7 @@ import json
 
 from bibtexparser.bibdatabase import BibDataStringExpression
 from bibtexparser.bparser import BibTexParser
+from bibtexparser import dumps
 from PyQt5.QtWidgets import QApplication
 from time import asctime
 from os import path, mkdir, rename
@@ -72,6 +73,35 @@ class control:
         # Relocate the export window
         mainsize = self.main.geometry()
         self.export.relocate(mainpos.x() + mainsize.width() + 6, mainpos.y() + 29)
+
+        # Button connections
+        self.export.push_right.clicked.connect(self.push_cit_right)
+        self.export.push_left.clicked.connect(self.push_cit_left)
+        self.export.copy_button.clicked.connect(self.copy_to_clipboard)
+
+    def push_cit_right(self):
+        clicked_index = self.main.citation_list.selectedItems()[0].text()
+        index_list = [self.export.exp_cit_widget.item(i).text()[0]
+                      for i in range(self.export.exp_cit_widget.count())]
+
+        if clicked_index not in index_list:
+            self.export.exp_cit_widget.addItem(f'{clicked_index}:\t[ {self.all_citations[clicked_index].get_name()} ]')
+
+    def push_cit_left(self):
+        self.export.exp_cit_widget.takeItem(self.export.exp_cit_widget.currentRow())
+
+    def copy_to_clipboard(self):
+        index_list = [self.export.exp_cit_widget.item(i).text()[0]
+                      for i in range(self.export.exp_cit_widget.count())]
+
+        # TODO: Fix copy to clipboard function
+        fin = ''
+        for index in index_list:
+            fin += dumps(self.all_citations[index].get_bibtex()) + '\n'
+            print(fin)
+        cb = QApplication.clipboard()
+        cb.clear(mode=cb.Clipboard)
+        cb.setText(fin, mode=cb.Clipboard)
 
     def open_pdf(self):
         clicked_index = self.main.citation_list.selectedItems()[0].text()

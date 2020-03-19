@@ -100,7 +100,6 @@ class main_GUI(QMainWindow):
                 self.citation_list.setItem(ind, ind2, item)
 
 
-
 class add_GUI(QWidget):
 
     def __init__(self, wh, control, name):
@@ -159,6 +158,8 @@ class export_GUI(QWidget):
         grid = QGridLayout()
         grid.setSpacing(30)
         self.exp_cit_widget = QListWidget()
+
+        # Initialize buttons
         self.copy_button = QPushButton('Copy')
         self.export_button = QPushButton('Export to BibTex')
         self.push_right = QPushButton("->")
