@@ -1,12 +1,9 @@
 # External libraries
-import pprint
 import subprocess
 import sys
 import json
 
-from bibtexparser.bibdatabase import BibDataStringExpression
 from bibtexparser.bparser import BibTexParser
-from bibtexparser import dumps
 from PyQt5.QtWidgets import QApplication
 from time import asctime
 from os import path, mkdir, rename
@@ -91,14 +88,16 @@ class control:
         self.export.exp_cit_widget.takeItem(self.export.exp_cit_widget.currentRow())
 
     def copy_to_clipboard(self):
+        # Receive a list of the indeces of all selected articles
         index_list = [self.export.exp_cit_widget.item(i).text()[0]
                       for i in range(self.export.exp_cit_widget.count())]
 
-        # TODO: Fix copy to clipboard function
+        # Generate string that combines all selected citations
         fin = ''
         for index in index_list:
-            fin += dumps(self.all_citations[index].get_bibtex()) + '\n'
-            print(fin)
+            fin += self.all_citations[index].bibtex_to_string() + '\n'
+
+        # Copy the string to the clipboard
         cb = QApplication.clipboard()
         cb.clear(mode=cb.Clipboard)
         cb.setText(fin, mode=cb.Clipboard)

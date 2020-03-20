@@ -48,3 +48,14 @@ class citation:
                 'access': self.access,
                 'bibtex': self.bibtex,
                 }
+
+    def bibtex_to_string(self) -> str:
+        bib = dict(self.bibtex)
+        first = f'@{bib["ENTRYTYPE"]}{{ {bib["ID"]},\n\t'
+        del bib['ENTRYTYPE']
+        del bib['ID']
+        for key, value in bib.items():
+            first += f'{key} = "{value}", \n\t'
+        first = first[:-4]
+        first += ' }'
+        return first
