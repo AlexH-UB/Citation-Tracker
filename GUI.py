@@ -1,6 +1,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QGridLayout, QTextEdit, QCheckBox, \
-    QDesktopWidget, QMainWindow, QListWidget, QListWidgetItem, QTableWidget, QTableWidgetItem, QTableView, QComboBox
+    QDesktopWidget, QMainWindow, QListWidget, QTableWidget, QTableWidgetItem, QTableView, QComboBox, \
+    QFileDialog
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QFont
@@ -180,6 +181,13 @@ class export_GUI(QWidget):
 
     def relocate(self, x, y):
         self.move(x, y)
+
+    def list_of_indices(self):
+        return [self.exp_cit_widget.item(i).text()[0]
+                for i in range(self.exp_cit_widget.count())]
+
+    def get_savefile_dialog(self) -> str:
+        return QFileDialog.getSaveFileName(self, "Save articles in BibTex")[0]
 
 
 class dnd_button(QPushButton):

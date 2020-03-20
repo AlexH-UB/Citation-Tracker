@@ -64,6 +64,8 @@ class control:
         self.main.citation_list.itemDoubleClicked.connect(self.open_pdf)
         self.main.export.triggered.connect(self.show_export)
 
+    # Export window initialization and functions
+
     def show_export(self):
         self.export = export_GUI(SIZE_EXP, self)
         mainpos = self.main.pos()
@@ -75,11 +77,11 @@ class control:
         self.export.push_right.clicked.connect(self.push_cit_right)
         self.export.push_left.clicked.connect(self.push_cit_left)
         self.export.copy_button.clicked.connect(self.copy_to_clipboard)
+        self.export.export_button.clicked.connect(self.export_to_bibtex)
 
     def push_cit_right(self):
         clicked_index = self.main.citation_list.selectedItems()[0].text()
-        index_list = [self.export.exp_cit_widget.item(i).text()[0]
-                      for i in range(self.export.exp_cit_widget.count())]
+        index_list = self.export.list_of_indices()
 
         if clicked_index not in index_list:
             self.export.exp_cit_widget.addItem(f'{clicked_index}:\t[ {self.all_citations[clicked_index].get_name()} ]')
@@ -87,10 +89,9 @@ class control:
     def push_cit_left(self):
         self.export.exp_cit_widget.takeItem(self.export.exp_cit_widget.currentRow())
 
-    def copy_to_clipboard(self):
-        # Receive a list of the indeces of all selected articles
-        index_list = [self.export.exp_cit_widget.item(i).text()[0]
-                      for i in range(self.export.exp_cit_widget.count())]
+    def copy_to_clipboard(self) -> str:
+        # Receive a list of the indices of all selected articles
+        index_list = self.export.list_of_indices()
 
         # Generate string that combines all selected citations
         fin = ''
@@ -101,6 +102,13 @@ class control:
         cb = QApplication.clipboard()
         cb.clear(mode=cb.Clipboard)
         cb.setText(fin, mode=cb.Clipboard)
+        return fin
+
+    def export_to_bibtex(self):
+        citations = self.copy_to_clipboard()
+        name = self.export.get_savefile_dialog()
+        with open(name, 'w') as save:
+            save.write(citations)
 
     def open_pdf(self):
         clicked_index = self.main.citation_list.selectedItems()[0].text()
