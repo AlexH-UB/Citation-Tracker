@@ -34,6 +34,10 @@ class control:
         self.afk.button.clicked.connect(self.show_main)
 
     def open_citations(self) -> dict:
+        """Checks if a .citation folder was created in the home directory before and if not it creates a new one.
+        Further loads all citations from the JSON save file and creates a citation object out of every citation.
+        :return: a dictionary with all citations as citation objects or an empty dictionary if no save file was found.
+        """
         # Create save folder and json save file if not there
         if not path.exists(CITATION_SAVE):
             mkdir(CITATION_SAVE)
@@ -55,11 +59,18 @@ class control:
         return {}
 
     def show_main(self):
+        """Opens a main GUI and initializes all citations to be displayed
+        :return: Nothing
+        """
+        # Initialize main GUI
         self.main = main_GUI(SIZE_MAIN, self)
+
+        # Create list of lists with display strings of all citations
         fin = []
         for ind, element in self.all_citations.items():
             fin.append(self.gen_show_name(ind))
         self.main.pop_list(fin)
+
         # Setting actions for main window
         self.main.citation_list.itemDoubleClicked.connect(self.open_pdf)
         self.main.export.triggered.connect(self.show_export)
@@ -67,7 +78,13 @@ class control:
     # Export window initialization and functions
 
     def show_export(self):
+        """Display export window and position it next to the main_GUI.
+        :return: Nothing
+        """
+        # Initialize export GUI
         self.export = export_GUI(SIZE_EXP, self)
+
+        # Reposition export GUI next to main GUI
         mainpos = self.main.pos()
         # Relocate the export window
         mainsize = self.main.geometry()
@@ -80,16 +97,28 @@ class control:
         self.export.export_button.clicked.connect(self.export_to_bibtex)
 
     def push_cit_right(self):
-        clicked_index = self.main.citation_list.selectedItems()[0].text()
-        index_list = self.export.list_of_indices()
+        """Selected citation is copied to the export window and its index and name are displayed in the listwidget.
+        :return: Nothing
+        """
+        # Selected item
+        selected_cit = self.main.citation_list.selectedItems()[0].text()
 
-        if clicked_index not in index_list:
-            self.export.exp_cit_widget.addItem(f'{clicked_index}:\t[ {self.all_citations[clicked_index].get_name()} ]')
+        # Check if selected item is already in the export menu
+        index_list = self.export.list_of_indices()
+        if selected_cit not in index_list:
+            self.export.exp_cit_widget.addItem(f'{selected_cit}:\t[ {self.all_citations[selected_cit].get_name()} ]')
 
     def push_cit_left(self):
+        """Remove citation from the export list.
+        :return: Nothing
+        """
         self.export.exp_cit_widget.takeItem(self.export.exp_cit_widget.currentRow())
 
-    def copy_to_clipboard(self) -> str:
+    def get_string_rep(self) -> str:
+        """Use a list of all indices that are in in the export list to generate a string representation of all
+        citations.
+        :return: BibTex string of all selected citations
+        """
         # Receive a list of the indices of all selected articles
         index_list = self.export.list_of_indices()
 
@@ -98,31 +127,51 @@ class control:
         for index in index_list:
             fin += self.all_citations[index].bibtex_to_string() + '\n'
 
+        return fin
+
+    def copy_to_clipboard(self):
+        """Get a list of all citations and copy their string representation to the clipboard
+        :return: Nothing
+        """
+        copy = self.get_string_rep()
+
         # Copy the string to the clipboard
         cb = QApplication.clipboard()
         cb.clear(mode=cb.Clipboard)
-        cb.setText(fin, mode=cb.Clipboard)
-        return fin
+        cb.setText(copy, mode=cb.Clipboard)
 
     def export_to_bibtex(self):
-        citations = self.copy_to_clipboard()
+        """Writes the BibTex string representations to a .bib file at a user defined directory.
+        :return: Nothing
+        """
+        citations = self.get_string_rep()
         name = self.export.get_savefile_dialog()
         with open(name, 'w') as save:
             save.write(citations)
 
     def open_pdf(self):
-        clicked_index = self.main.citation_list.selectedItems()[0].text()
-        filepath = self.all_citations[clicked_index].get_path()
+        """Open selected citation (Works only on linux for now)
+        :return: Nothing
+        """
+        # Get selected citation
+        selected_cit = self.main.citation_list.selectedItems()[0].text()
+        filepath = self.all_citations[selected_cit].get_path()
 
         # Opening the files only works on linux yet
         if sys.platform == 'linux':
             subprocess.call(["xdg-open", filepath])
 
     def gen_show_name(self, cit_index: int) -> list:
+        """Generates a list of the displayed properties for a citation.
+        :param cit_index: Index of the citation that is used.
+        :return: list of properties that are displayed in the main GUI
+        """
         key = cit_index
         value = self.all_citations[key]
         name = value.get_name()
         tags = value.get_tags()
+
+        # Add all tags to a string
         tags_part = ''
         for tag in tags:
             if tag != '':
@@ -134,23 +183,39 @@ class control:
         return [key, name, tags_part, title, authors, value.get_bibtex()["year"]]
 
     def show_add(self, name: str):
+        """Shows the add GUI.
+        :param name: Preassigned name of the new citation
+        :return: Nothing
+        """
+        # Initialize add GUI
         self.add = add_GUI(SIZE_ADD, self, name)
 
         # Add connections
         self.add.accept.clicked.connect(self.new_citation)
         self.add.decline.clicked.connect(self.add.close)
 
-    def get_next_index(self):
+    def get_next_index(self) -> int:
+        """Returns the next index of the main window citation list
+        :return: Next index of the citation list
+        """
         return len(self.all_citations)
 
     # Add citations
 
-    def parse_latex(self, bibtexstr: str):
+    def parse_latex(self, bibtexstr: str) -> dict:
+        """The BibTex string that is put in the addition screen is parsed into a dictionary.
+        :param bibtexstr: String that is put in the addition GUI
+        :return: BibTex citation as dictionary
+        """
         bp = BibTexParser(common_strings=True)
         bib_database = bp.parse(bibtexstr)
         return bib_database.entries[0]
 
     def new_citation(self):
+        """Function that adds a new citation to the current citation list. Via entries int he add GUI the user can
+        specify the BibTex information and the name. The citation list is immediately saved in the JSON save file.
+        :return: Nothing
+        """
         if self.add.textedit.toPlainText()[0] == "@":
 
             # Parameter for the new citation
@@ -178,6 +243,10 @@ class control:
         self.fp = filep
 
     def check_for_duplicate(self, cit: citation) -> bool:
+        """Check if a BibTex citation is already in the citation list. In this case returns False otherwise True.
+        :param cit: Citation object
+        :return: True when the object is not in the citation list otherwise False
+        """
         for ind, list_cit in self.all_citations.items():
             if cit.get_bibtex() == list_cit.get_bibtex():
                 return False
@@ -186,6 +255,9 @@ class control:
     # Save citations to json file
 
     def dump_to_json(self):
+        """All citations are saved in a JSON file.
+        :return: Nothing
+        """
         with open(SAVE_JSON, "w") as file:
             dic = {key: value.get_dict() for key, value in self.all_citations.items()}
             json.dump(dic, file)

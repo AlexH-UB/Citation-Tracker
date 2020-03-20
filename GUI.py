@@ -30,12 +30,18 @@ class afk_GUI(QWidget):
         self.show()
 
     def move_window(self):
+        """The afk window is moved to the top right corner and can be used from this position.
+        :return: Nothing
+        """
         self.control.screensize = QDesktopWidget().screenGeometry()
         widget = self.geometry()
         x = self.control.screensize.width() - widget.width()
         self.move(x, 0)
 
     def update_num_citations(self):
+        """The number of citations in the citation list is displayed in the afk GUI.
+        :return: Nothing
+        """
         self.button.setText(str(self.control.get_next_index()))
 
 
@@ -91,6 +97,10 @@ class main_GUI(QMainWindow):
         self.show()
 
     def pop_list(self, names: list):
+        """Populates the tablewidget on the main_GUI with a list of strings.
+        :param names: list of strings
+        :return: Nothing
+        """
         # list of lists
         self.citation_list.setRowCount(len(names))
         for ind, value in enumerate(names):
@@ -180,13 +190,24 @@ class export_GUI(QWidget):
         self.show()
 
     def relocate(self, x, y):
+        """Relocates the export GUI to the coordinate x and y.
+        :param x: horizontal coordinate
+        :param y: vertical coordinate
+        :return: Nothing
+        """
         self.move(x, y)
 
-    def list_of_indices(self):
+    def list_of_indices(self) -> list:
+        """Generates a list of all indices of the articles that were selected to be exported.
+        :return: List of all indices of the articles that were selected to be exported.
+        """
         return [self.exp_cit_widget.item(i).text()[0]
                 for i in range(self.exp_cit_widget.count())]
 
     def get_savefile_dialog(self) -> str:
+        """Opens a file dialog window to determine the directory the BibTex file is saved in.
+        :return: Path of the BibTex file as string
+        """
         return QFileDialog.getSaveFileName(self, "Save articles in BibTex")[0]
 
 
