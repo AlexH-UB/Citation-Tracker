@@ -1,13 +1,13 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QGridLayout, QTextEdit, QCheckBox, \
     QDesktopWidget, QMainWindow, QListWidget, QTableWidget, QTableWidgetItem, QTableView, QComboBox, \
-    QFileDialog
+    QFileDialog, QAction
 
 from PyQt5 import QtCore
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QKeySequence
 
 from constants import EXAMPLE_CITATION, TITLE_ADD, TITLE_MAIN, LABEL_NAME, LABEL_TAGS, LABEL_BIBTEX, FONT_SIZE, \
-    TITLE_EXPORT, LABEL_TABLE
+    TITLE_EXPORT, LABEL_TABLE, MOVE_LEFT, MOVE_RIGHT, QUICK_COPY, OPEN_EXPORT
 
 
 class afk_GUI(QWidget):
@@ -55,10 +55,6 @@ class main_GUI(QMainWindow):
         self.setWindowTitle(TITLE_MAIN)
         self.control = control
 
-        # Init menu bar
-        menu = self.menuBar().addMenu('File')
-        self.export = menu.addAction("Export")
-
         # Init of main window stuff
         maingrid = QGridLayout()
         maingrid.setSpacing(50)
@@ -67,13 +63,12 @@ class main_GUI(QMainWindow):
         toplayout.setAlignment(Qt.AlignRight)
         maingrid.addLayout(toplayout, 0, 0)
 
-        searchbar = QLineEdit("Searchbar")
+        self.searchbar = QLineEdit("Search..")
         self.combo = QComboBox()
         self.combo.addItem('Index ↓')
         self.combo.addItem('Index ↑')
         self.combo.addItem('Relevance ↓')
         self.combo.addItem('Relevance ↑')
-
 
         toplayout.setColumnStretch(0, 1)
         toplayout.setColumnStretch(1, 1)
@@ -87,7 +82,7 @@ class main_GUI(QMainWindow):
         toplayout.addWidget(QLabel("test"), 0, 2)
         toplayout.addWidget(QLabel("test"), 0, 3)
         toplayout.addWidget(QLabel("test"), 0, 4)
-        toplayout.addWidget(searchbar, 0, 5)
+        toplayout.addWidget(self.searchbar, 0, 5)
 
         toplayout.addWidget(QLabel("test"), 1, 0)
         toplayout.addWidget(QLabel("test"), 1, 1)
@@ -112,6 +107,24 @@ class main_GUI(QMainWindow):
         self.citation_list.setColumnWidth(5, 70)
         self.citation_list.verticalHeader().setVisible(False)
         self.citation_list.setEditTriggers(QTableWidget.NoEditTriggers)
+
+        # Actions
+
+        self.move_right = QAction('&Move to export', self)
+        self.move_right.setShortcut(QKeySequence(MOVE_RIGHT))
+
+        self.show_exp = QAction('&Open export', self)
+        self.show_exp.setShortcut(QKeySequence(OPEN_EXPORT))
+
+        self.quick_copy = QAction('&Quick copy BibTex', self)
+        self.quick_copy.setShortcut(QKeySequence(QUICK_COPY))
+
+        # Init menu bar
+        menu = self.menuBar().addMenu('Articles')
+        menu.addAction(self.quick_copy)
+        menu.addSeparator()
+        menu.addAction(self.show_exp)
+        menu.addAction(self.move_right)
 
         maingrid.addWidget(self.citation_list, 1, 0)
         wid = QWidget(self)

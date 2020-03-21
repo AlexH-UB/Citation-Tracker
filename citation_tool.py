@@ -74,8 +74,52 @@ class control:
 
         # Setting actions for main window
         self.main.citation_list.itemDoubleClicked.connect(self.open_pdf)
-        self.main.export.triggered.connect(self.show_export)
+        self.main.show_exp.triggered.connect(self.show_export)
         self.main.combo.currentTextChanged.connect(self.sort_and_display_articles)
+
+        self.main.quick_copy.triggered.connect(self.quick_copy)
+        self.main.searchbar.textChanged.connect(self.search)
+
+    def search(self):
+
+        # Search text
+        text = self.main.searchbar.text().lower()
+
+        res = []
+        # Go through all articles and search for the text in the contents
+        for ind, art in self.all_articles.items():
+            add = False
+
+            # Search for text in BibTex
+            for key, value in art.get_bibtex().items():
+                if text in key.lower() or text in value.lower():
+                    add = True
+
+            # Search for text in name
+            if text in art.get_name().lower():
+                add = True
+
+            # Search for text in tags
+            for el in art.get_tags():
+                if text in el.lower():
+                    add = True
+
+            if add:
+                res.append(ind)
+
+        # Refresh displayed articles to only those with matching words
+        self.currently_displayed = res
+        self.sort_and_display_articles()
+
+    def quick_copy(self):
+        """Method to quickly copy the selected articles BibTex citation to the clipboard
+        :return: Nothing
+        """
+        index = self.main.citation_list.currentRow()
+        copy = '\n' + self.all_articles[str(index)].bibtex_to_string() + '\n'
+        cb = QApplication.clipboard()
+        cb.clear(mode=cb.Clipboard)
+        cb.setText(copy, mode=cb.Clipboard)
 
     def sort_and_display_articles(self):
         """Uses the currently displayed articles and the sort settings as a basis to rearrange the table in user defined
@@ -168,17 +212,40 @@ class control:
         self.export.copy_button.clicked.connect(self.exp_copy_to_clipboard)
         self.export.export_button.clicked.connect(self.exp_export_to_bibtex)
 
+        # Actions on main window
+        self.main.move_right.triggered.connect(self.exp_push_cit_right)
+
     def exp_push_cit_right(self):
         """Selected citation is copied to the export window and its index and name are displayed in the listwidget.
         :return: Nothing
         """
-        # Selected item
-        selected_cit = self.main.citation_list.selectedItems()[0].text()
 
-        # Check if selected item is already in the export menu
-        index_list = self.export.list_of_indices()
-        if selected_cit not in index_list:
-            self.export.exp_cit_widget.addItem(f'{selected_cit}:\t[ {self.all_articles[selected_cit].get_name()} ]')
+        # Selected items
+        selected_cit = []
+
+        # if no row is selected returns -1
+        if self.main.citation_list.currentRow() >= 0:
+
+            le = len(self.main.citation_list.selectedItems())
+
+            # If number if selected rows is larger than 1
+            if le > 6:
+                for num in range(le // 6):
+
+                    # Add all selected article indices to a list
+                    selected_cit.append(self.main.citation_list.selectedItems()[num * 6].text())
+            else:
+
+                # Only one article is selected, add index to list
+                selected_cit = [self.main.citation_list.selectedItems()[0].text()]
+
+            # Get indices of articles in the export window
+            index_list = self.export.list_of_indices()
+            for el in selected_cit:
+
+                # Check if selected item is already in the export window
+                if el not in index_list:
+                    self.export.exp_cit_widget.addItem(f'{el}:\t[ {self.all_articles[el].get_name()} ]')
 
     def exp_push_cit_left(self):
         """Remove citation from the export list.

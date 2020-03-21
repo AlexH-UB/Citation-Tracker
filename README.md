@@ -19,7 +19,7 @@ Create an easy to use drag and drop application that keeps track of your article
 ### Todo:
 
 * [x] Open articles via the GUI
-* [ ] Write search algorithm
+* [x] Write search algorithm
 * [x] Write correct functions to store articles
 * [ ] Find URL to BibTex python library and integrate it 
 * [ ] Design Icon

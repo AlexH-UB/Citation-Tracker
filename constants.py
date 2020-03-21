@@ -1,5 +1,5 @@
 from os.path import expanduser
-from random import randint
+from random import choice
 
 
 # Constants
@@ -46,13 +46,7 @@ EXAMPLE_CITATION3 = '@article{Mass2014,' \
                     '  journal = {Developmental Cell}' \
                     '}'
 
-r = randint(0, 100)
-if r < 33:
-    EXAMPLE_CITATION = EXAMPLE_CITATION1
-elif 33 <= r < 66:
-    EXAMPLE_CITATION = EXAMPLE_CITATION2
-else:
-    EXAMPLE_CITATION = EXAMPLE_CITATION3
+EXAMPLE_CITATION = choice([EXAMPLE_CITATION1, EXAMPLE_CITATION2, EXAMPLE_CITATION3])
 
 
 VERSION = "beta 1.0"
@@ -88,4 +82,10 @@ HOME = expanduser("~")
 CITATION_SAVE = HOME + "/.citations"
 SAVE_JSON = CITATION_SAVE + "/save.json"
 
+# Shortcuts
+
+MOVE_RIGHT = 'Ctrl+x'
+MOVE_LEFT = 'Ctrl+y'
+OPEN_EXPORT = 'Ctrl+e'
+QUICK_COPY = 'Ctrl+c'
 
