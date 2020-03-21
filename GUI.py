@@ -64,14 +64,37 @@ class main_GUI(QMainWindow):
         maingrid.setSpacing(50)
 
         toplayout = QGridLayout()
+        toplayout.setAlignment(Qt.AlignRight)
         maingrid.addLayout(toplayout, 0, 0)
+
+        searchbar = QLineEdit("Searchbar")
+        self.combo = QComboBox()
+        self.combo.addItem('Index ↓')
+        self.combo.addItem('Index ↑')
+        self.combo.addItem('Relevance ↓')
+        self.combo.addItem('Relevance ↑')
+
+
+        toplayout.setColumnStretch(0, 1)
+        toplayout.setColumnStretch(1, 1)
+        toplayout.setColumnStretch(2, 1)
+        toplayout.setColumnStretch(3, 1)
+        toplayout.setColumnStretch(4, 1)
+        toplayout.setColumnStretch(5, 1)
+
         toplayout.addWidget(QLabel("test"), 0, 0)
         toplayout.addWidget(QLabel("test"), 0, 1)
-        toplayout.addWidget(QLineEdit("Searchbar"), 0, 2)
+        toplayout.addWidget(QLabel("test"), 0, 2)
+        toplayout.addWidget(QLabel("test"), 0, 3)
+        toplayout.addWidget(QLabel("test"), 0, 4)
+        toplayout.addWidget(searchbar, 0, 5)
 
         toplayout.addWidget(QLabel("test"), 1, 0)
         toplayout.addWidget(QLabel("test"), 1, 1)
-        toplayout.addWidget(QComboBox(), 1, 2)
+        toplayout.addWidget(QLabel("test"), 1, 2)
+        toplayout.addWidget(QLabel("test"), 1, 3)
+        toplayout.addWidget(QLabel("test"), 1, 4)
+        toplayout.addWidget(self.combo, 1, 5)
 
         self.citation_list = QTableWidget(6, 6)
         self.citation_list.setSelectionBehavior(QTableView.SelectRows)
@@ -102,6 +125,7 @@ class main_GUI(QMainWindow):
         :return: Nothing
         """
         # list of lists
+        self.citation_list.setRowCount(0)
         self.citation_list.setRowCount(len(names))
         for ind, value in enumerate(names):
             for ind2, value2 in enumerate(value):
