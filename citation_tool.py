@@ -43,7 +43,6 @@ class control:
         :return: a dictionary with all citations as citation objects or an empty dictionary if no save file was found.
         """
         # Create save folder and json save file if not there
-        print(CITATION_SAVE)
         if not path.exists(CITATION_SAVE):
             mkdir(CITATION_SAVE)
             with open(SAVE_JSON, 'w') as f:
@@ -348,7 +347,7 @@ class control:
             # Check if citation is in list already
             if self.check_for_duplicate(cit):
                 if self.add.move.isChecked():
-                    cit.set_path(path.join(CITATION_SAVE, path.sep, self.fp.split(path.sep)[-1]))
+                    cit.set_path(path.join(CITATION_SAVE, self.fp.split(path.sep)[-1]))
                     rename(self.fp, cit.get_path())
                 self.all_articles[cit.get_index()] = cit
                 self.dump_to_json()

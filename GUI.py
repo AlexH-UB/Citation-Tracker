@@ -269,6 +269,5 @@ class dnd_button(QPushButton):
             e.ignore()
 
     def dropEvent(self, e):
-        print(e.mimeData().text().split(path.sep)[-1][:-4])
         self.parent.control.show_add(e.mimeData().text().split(path.sep)[-1][:-4])
         self.parent.control.set_filepath(e.mimeData().text()[7:])
