@@ -8,6 +8,8 @@ from bibtexparser.bparser import BibTexParser
 from PyQt5.QtWidgets import QApplication
 from time import asctime
 from os import path, mkdir, rename
+if sys.platform == "win32":
+    from os import startfile
 
 # Own stuff
 from constants import BUTTON_COLOR_THEME1, CITATION_SAVE, SAVE_JSON, SIZE_MAIN, SIZE_ADD, SIZE_AFK, SIZE_EXP, BASE_URL
@@ -82,6 +84,10 @@ class control:
         self.main.searchbar.textChanged.connect(self.search)
 
     def search(self):
+        """Search for a string in all articles name, tags and BibTex citation. Creates a filtered list of articles and
+        displays them.
+        :return: Nothing
+        """
 
         # Search text
         text = self.main.searchbar.text().lower()
@@ -182,9 +188,19 @@ class control:
         self.dump_to_json()
         filepath = self.all_articles[selected_art].get_path()
 
-        # Opening the files only works on linux yet
+        # linux
         if sys.platform == 'linux':
             subprocess.call(["xdg-open", filepath])
+
+        # macOS
+        elif sys.platform == 'Darwin':
+            subprocess.call(('open', filepath))
+
+        # Windows
+        else:
+            startfile(filepath)
+
+
 
     def get_next_index(self) -> int:
         """Returns the next index of the main window citation list
@@ -338,7 +354,6 @@ class control:
 
             # update number of citations in the GUI
             self.afk.update_num_citations()
-            self.sort_and_display_articles()
             self.add.close()
 
     def check_for_duplicate(self, art: article) -> bool:
@@ -355,9 +370,13 @@ class control:
         self.fp = filep
 
     def doi2bibtex(self):
+        """If a DOI is entered in the DOI line edit, the DOI is searched for in the internet and the corresponding
+        BibTex citation is inserted to the text field.
+        :return: Nothing
+        """
 
         # Thanks to https://scipython.com/blog/doi-to-bibtex/
-        url = BASE_URL + '10.1016/j.devcel.2014.02.012'
+        url = BASE_URL + self.add.doiedit.text()
         req = urllib.request.Request(url)
         req.add_header('Accept', 'application/x-bibtex')
 
