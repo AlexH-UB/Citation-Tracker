@@ -2,6 +2,7 @@
 import subprocess
 import sys
 import json
+import urllib.request
 
 from bibtexparser.bparser import BibTexParser
 from PyQt5.QtWidgets import QApplication
@@ -9,7 +10,7 @@ from time import asctime
 from os import path, mkdir, rename
 
 # Own stuff
-from constants import BUTTON_COLOR_THEME1, CITATION_SAVE, SAVE_JSON, SIZE_MAIN, SIZE_ADD, SIZE_AFK, SIZE_EXP
+from constants import BUTTON_COLOR_THEME1, CITATION_SAVE, SAVE_JSON, SIZE_MAIN, SIZE_ADD, SIZE_AFK, SIZE_EXP, BASE_URL
 from core import article
 from GUI import main_GUI, afk_GUI, add_GUI, export_GUI
 
@@ -92,7 +93,7 @@ class control:
 
             # Search for text in BibTex
             for key, value in art.get_bibtex().items():
-                if text in key.lower() or text in value.lower():
+                if text in value.lower():
                     add = True
 
             # Search for text in name
@@ -231,7 +232,6 @@ class control:
             # If number if selected rows is larger than 1
             if le > 6:
                 for num in range(le // 6):
-
                     # Add all selected article indices to a list
                     selected_cit.append(self.main.citation_list.selectedItems()[num * 6].text())
             else:
@@ -301,6 +301,7 @@ class control:
         # Add connections
         self.add.accept.clicked.connect(self.new_citation)
         self.add.decline.clicked.connect(self.add.close)
+        self.add.doiedit.textChanged.connect(self.doi2bibtex)
 
     def parse_latex(self, bibtexstr: str) -> dict:
         """The BibTex string that is put in the addition screen is parsed into a dictionary.
@@ -337,6 +338,7 @@ class control:
 
             # update number of citations in the GUI
             self.afk.update_num_citations()
+            self.sort_and_display_articles()
             self.add.close()
 
     def check_for_duplicate(self, art: article) -> bool:
@@ -351,6 +353,20 @@ class control:
 
     def set_filepath(self, filep: str):
         self.fp = filep
+
+    def doi2bibtex(self):
+
+        # Thanks to https://scipython.com/blog/doi-to-bibtex/
+        url = BASE_URL + '10.1016/j.devcel.2014.02.012'
+        req = urllib.request.Request(url)
+        req.add_header('Accept', 'application/x-bibtex')
+
+        try:
+            with urllib.request.urlopen(req) as f:
+                self.add.textedit.setPlainText(f.read().decode())
+
+        except:
+            print("DOI not found!")
 
     # Save citations to json file
 

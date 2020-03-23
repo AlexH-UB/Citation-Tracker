@@ -168,12 +168,17 @@ class add_GUI(QWidget):
         self.tagsedit = QLineEdit()
         grid.addWidget(self.tagsedit, 1, 1)
 
+        # Create label and line edit to enter the DOI of an article to generate the BibTex from it
+        grid.addWidget(QLabel('DOI'), 2, 0)
+        self.doiedit = QLineEdit()
+        grid.addWidget(self.doiedit, 2, 1)
+
         # Create text field for citation information in bibTex format
         self.latexlab = QLabel(LABEL_BIBTEX)
         self.latexlab.setAlignment(Qt.AlignTop)
-        grid.addWidget(self.latexlab, 2, 0)
+        grid.addWidget(self.latexlab, 3, 0)
         self.textedit = QTextEdit(EXAMPLE_CITATION)
-        grid.addWidget(self.textedit, 2, 1)
+        grid.addWidget(self.textedit, 3, 1, 2, 1)
 
         # Add Accept and cancel button
         self.accept = QPushButton('Add to Library')
@@ -181,9 +186,9 @@ class add_GUI(QWidget):
         self.move = QCheckBox('Move file')
         self.move.setChecked(True)
 
-        grid.addWidget(self.decline, 3, 0)
-        grid.addWidget(self.accept, 3, 1)
-        grid.addWidget(self.move, 3, 2)
+        grid.addWidget(self.decline, 5, 0)
+        grid.addWidget(self.accept, 5, 1)
+        grid.addWidget(self.move, 4, 0)
 
         # Final init steps
         self.setLayout(grid)

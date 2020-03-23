@@ -1,4 +1,4 @@
-from os.path import expanduser
+from os.path import expanduser, join
 from random import choice
 
 
@@ -62,7 +62,7 @@ TITLE_EXPORT = 'Export your citations'
 # Window Sizes
 
 SIZE_MAIN = (1450, 650)
-SIZE_ADD = (600, 500)
+SIZE_ADD = (500, 500)
 SIZE_EXP = (400, SIZE_MAIN[1])
 SIZE_AFK = (50, 50)
 
@@ -73,14 +73,18 @@ LABEL_TAGS = 'Tags:'
 LABEL_BIBTEX = 'BibTex:'
 LABEL_TABLE = ["index", "name", "tags", "title", "authors", "year"]
 
+# DOI 2 BibTex
+
+BASE_URL = 'http://dx.doi.org/'
+
 # Color themes
 
 BUTTON_COLOR_THEME1 = ('slategray', 'white')
 
 # Folders
 HOME = expanduser("~")
-CITATION_SAVE = HOME + "/.citations"
-SAVE_JSON = CITATION_SAVE + "/save.json"
+CITATION_SAVE = join(HOME,  ".citations")
+SAVE_JSON = join(CITATION_SAVE, "save.json")
 
 # Shortcuts
 

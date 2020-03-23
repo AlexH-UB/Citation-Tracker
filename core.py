@@ -8,7 +8,7 @@ class article:
         :param path: path to the original file
         :param tags: list with all tags that make it easier to find the documents
         :param access: first access date
-        :param bibTex: BibTex citation as dictionary, parsed by BibTex parser module
+        :param bibtex: BibTex citation as dictionary, parsed by BibTex parser module
         :param relevance; How often the article was opened
         """
         self.index = index
