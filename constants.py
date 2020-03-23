@@ -1,4 +1,4 @@
-from os.path import expanduser, join
+from os.path import expanduser, join, sep
 from random import choice
 
 
@@ -83,7 +83,7 @@ BUTTON_COLOR_THEME1 = ('slategray', 'white')
 
 # Folders
 HOME = expanduser("~")
-CITATION_SAVE = join(HOME,  ".citations")
+CITATION_SAVE = join(HOME, ".citations")
 SAVE_JSON = join(CITATION_SAVE, "save.json")
 
 # Shortcuts

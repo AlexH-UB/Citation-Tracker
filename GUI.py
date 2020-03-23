@@ -3,6 +3,8 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QGridLayout
     QDesktopWidget, QMainWindow, QListWidget, QTableWidget, QTableWidgetItem, QTableView, QComboBox, \
     QFileDialog, QAction
 
+from os import path
+
 from PyQt5 import QtCore
 from PyQt5.QtGui import QFont, QKeySequence
 
@@ -267,5 +269,6 @@ class dnd_button(QPushButton):
             e.ignore()
 
     def dropEvent(self, e):
-        self.parent.control.show_add(e.mimeData().text().split('/')[-1][:-4])
+        print(e.mimeData().text().split(path.sep)[-1][:-4])
+        self.parent.control.show_add(e.mimeData().text().split(path.sep)[-1][:-4])
         self.parent.control.set_filepath(e.mimeData().text()[7:])
