@@ -6,10 +6,10 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QGridLayout
 from os import path
 
 from PyQt5 import QtCore
-from PyQt5.QtGui import QFont, QKeySequence
+from PyQt5.QtGui import QFont, QKeySequence, QIcon
 
 from constants import EXAMPLE_CITATION, TITLE_ADD, TITLE_MAIN, LABEL_NAME, LABEL_TAGS, LABEL_BIBTEX, FONT_SIZE, \
-    TITLE_EXPORT, LABEL_TABLE, MOVE_LEFT, MOVE_RIGHT, QUICK_COPY, OPEN_EXPORT
+    TITLE_EXPORT, LABEL_TABLE, MOVE_LEFT, MOVE_RIGHT, QUICK_COPY, OPEN_EXPORT, LOGO_PATH
 
 
 class afk_GUI(QWidget):
@@ -56,6 +56,7 @@ class main_GUI(QMainWindow):
         self.setFixedSize(wh[0], wh[1])
         self.setWindowTitle(TITLE_MAIN)
         self.control = control
+        self.setWindowIcon(QIcon(LOGO_PATH))
 
         # Init of main window stuff
         maingrid = QGridLayout()
@@ -159,6 +160,7 @@ class add_GUI(QWidget):
         self.setFixedSize(wh[0], wh[1])
         grid = QGridLayout()
         grid.setSpacing(10)
+        self.setWindowIcon(QIcon(LOGO_PATH))
 
         # Create label and line edit to enter a short name for the citation
         grid.addWidget(QLabel(LABEL_NAME), 0, 0)
@@ -209,6 +211,7 @@ class export_GUI(QWidget):
         self.setFixedSize(wh[0], wh[1])
         self.setWindowTitle(TITLE_EXPORT)
         self.control = control
+        self.setWindowIcon(QIcon(LOGO_PATH))
 
         grid = QGridLayout()
         grid.setSpacing(30)

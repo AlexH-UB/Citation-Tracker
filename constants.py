@@ -85,6 +85,8 @@ BUTTON_COLOR_THEME1 = ('slategray', 'white')
 HOME = expanduser("~")
 CITATION_SAVE = join(HOME, ".citations")
 SAVE_JSON = join(CITATION_SAVE, "save.json")
+IMAGE_PATH = 'imgs' + sep
+LOGO_PATH = join(IMAGE_PATH, 'logo.png')
 
 # Shortcuts
 

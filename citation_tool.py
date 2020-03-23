@@ -115,7 +115,7 @@ class control:
                 res.append(ind)
 
         # Refresh displayed articles to only those with matching words
-        self.currently_displayed = res
+        self.currently_displayed = [int(r) for r in res]
         self.sort_and_display_articles()
 
     def quick_copy(self):
@@ -149,7 +149,7 @@ class control:
         # Turn list around
         if index == 1 or index == 3:
             indices = indices[::-1]
-
+        print(indices)
         # Generate display data for the indexed articles
         fin = []
         for ind in indices:
@@ -179,7 +179,7 @@ class control:
         return [key, name, tags_part, title, authors, value.get_bibtex()["year"]]
 
     def open_pdf(self):
-        """Open selected citation (Works only on linux for now)
+        """Open selected citation
         :return: Nothing
         """
         # Get selected citation
