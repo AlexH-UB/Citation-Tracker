@@ -24,5 +24,6 @@ Create an easy to use drag and drop application that keeps track of your article
 * [x] Find DOI to BibTex python library and integrate it 
 * [ ] Design Icon
 * [ ] Small list widget with all tags sorted by popularity
+* [ ] Make file opening compatable with all systems
 
 ---
