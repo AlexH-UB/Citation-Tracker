@@ -154,9 +154,13 @@ class control:
             for ind, article in self.all_articles.items():
 
                 # If its the last article break
-                if int(ind) == len(self.all_articles)-1:
+                if int(ind) == len(self.all_articles)-1 and int(ind) != int(selected_cit):
                     if int(ind) in curr:
                         self.currently_displayed.append(int(ind)-1)
+                    break
+
+                # If deleted article is the last one just break
+                elif int(ind) == len(self.all_articles) - 1 and int(ind) == int(selected_cit):
                     break
 
                 # If its the deleted article set its value to the next article
@@ -174,12 +178,12 @@ class control:
                     if int(ind) in curr:
                         self.currently_displayed.append(int(ind))
 
-        # Delete duplicate article at the end
-        del self.all_articles[str(self.get_next_index()-1)]
+            # Delete duplicate article at the end
+            del self.all_articles[str(self.get_next_index()-1)]
 
-        # Refresh display and save articles to JSON file
-        self.sort_and_display_articles()
-        self.dump_to_json()
+            # Refresh display and save articles to JSON file
+            self.sort_and_display_articles()
+            self.dump_to_json()
 
     def add_and(self):
             self.main.searchbar.setText(f'{self.main.searchbar.text()}|a|')
