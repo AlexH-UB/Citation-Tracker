@@ -1,4 +1,4 @@
-## Citation Tracker
+## Scientific Article Tracker
 ---
 
 ### Basic idea:
@@ -22,8 +22,9 @@ Create an easy to use drag and drop application that keeps track of your article
 * [x] Write search algorithm
 * [x] Write correct functions to store articles
 * [x] Find DOI to BibTex python library and integrate it 
-* [ ] Design Icon
-* [ ] Small list widget with all tags sorted by popularity
-* [ ] Make file opening compatable with all systems
+* [x] Design Icon
+* [ ] Create how to use section on the github page
+* [ ] Create a settings window that the user can interact with
+* [ ] Add shortcuts for the credits window and the settings window 
 
 ---

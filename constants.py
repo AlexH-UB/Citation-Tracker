@@ -1,7 +1,6 @@
 from os.path import expanduser, join, sep
 from random import choice
 
-
 # Constants
 
 EXAMPLE_CITATION1 = '@article{Fuss2006,' \
@@ -52,6 +51,15 @@ EXAMPLE_CITATION = choice([EXAMPLE_CITATION1, EXAMPLE_CITATION2, EXAMPLE_CITATIO
 VERSION = "beta 1.0"
 NAME = f"Alex's Citation Manager Version {VERSION}"
 FONT_SIZE = 11
+EXPLAIN_TEXT = f'Welcome to {NAME}. The purpose of this app is to help you keep track of your articles. When ' \
+               f'inserting an article, it should be tagged with 1-10 short tags that describe it as well as possible. ' \
+               f'This way it is much easier to organize and find your articles later in time. Articles can be moved ' \
+               f'to a specific article folder in your home directory and opened by double clicking the articles in ' \
+               f' this window. For a more detailed description and explanation of all functions check out the ' \
+               f'<a href="https://github.com/AlexH-UB/Citation-Tracker">How to use page on my Github</a>. Thanks ' \
+               f'for using.'
+
+HIDE_EXPLAIN = False
 
 # Window titles
 
@@ -65,6 +73,8 @@ SIZE_MAIN = (1450, 650)
 SIZE_ADD = (500, 500)
 SIZE_EXP = (400, SIZE_MAIN[1])
 SIZE_AFK = (50, 50)
+
+SIZE_AND_BUTTON = (60, 30)
 
 # GUI labels names
 
@@ -83,8 +93,8 @@ BUTTON_COLOR_THEME1 = ('slategray', 'white')
 
 # Folders
 HOME = expanduser("~")
-CITATION_SAVE = join(HOME, ".citations")
-SAVE_JSON = join(CITATION_SAVE, "save.json")
+ARTICLE_SAVE = join(HOME, ".articles")
+SAVE_JSON = join(ARTICLE_SAVE, "articles.json")
 IMAGE_PATH = 'imgs' + sep
 LOGO_PATH = join(IMAGE_PATH, 'logo.png')
 

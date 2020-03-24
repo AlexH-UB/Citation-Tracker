@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QGridLayout, QTextEdit, QCheckBox, \
     QDesktopWidget, QMainWindow, QListWidget, QTableWidget, QTableWidgetItem, QTableView, QComboBox, \
     QFileDialog, QAction
@@ -9,7 +9,8 @@ from PyQt5 import QtCore
 from PyQt5.QtGui import QFont, QKeySequence, QIcon
 
 from constants import EXAMPLE_CITATION, TITLE_ADD, TITLE_MAIN, LABEL_NAME, LABEL_TAGS, LABEL_BIBTEX, FONT_SIZE, \
-    TITLE_EXPORT, LABEL_TABLE, MOVE_LEFT, MOVE_RIGHT, QUICK_COPY, OPEN_EXPORT, LOGO_PATH
+    TITLE_EXPORT, LABEL_TABLE, MOVE_RIGHT, QUICK_COPY, OPEN_EXPORT, LOGO_PATH, SIZE_AND_BUTTON, EXPLAIN_TEXT,\
+    HIDE_EXPLAIN
 
 
 class afk_GUI(QWidget):
@@ -60,7 +61,7 @@ class main_GUI(QMainWindow):
 
         # Init of main window stuff
         maingrid = QGridLayout()
-        maingrid.setSpacing(50)
+        maingrid.setSpacing(10)
 
         toplayout = QGridLayout()
         toplayout.setAlignment(Qt.AlignRight)
@@ -73,26 +74,22 @@ class main_GUI(QMainWindow):
         self.combo.addItem('Relevance ↓')
         self.combo.addItem('Relevance ↑')
 
-        toplayout.setColumnStretch(0, 1)
-        toplayout.setColumnStretch(1, 1)
-        toplayout.setColumnStretch(2, 1)
-        toplayout.setColumnStretch(3, 1)
-        toplayout.setColumnStretch(4, 1)
-        toplayout.setColumnStretch(5, 1)
+        self.add_button = QPushButton('and')
+        self.add_button.setMaximumSize(QSize(SIZE_AND_BUTTON[0], SIZE_AND_BUTTON[1]))
+        self.explain_label = QLabel(EXPLAIN_TEXT)
+        self.explain_label.setWordWrap(True)
+        self.explain_label.setOpenExternalLinks(True)
+        self.explain_label.setVisible(not HIDE_EXPLAIN)
 
-        toplayout.addWidget(QLabel("test"), 0, 0)
-        toplayout.addWidget(QLabel("test"), 0, 1)
-        toplayout.addWidget(QLabel("test"), 0, 2)
-        toplayout.addWidget(QLabel("test"), 0, 3)
-        toplayout.addWidget(QLabel("test"), 0, 4)
-        toplayout.addWidget(self.searchbar, 0, 5)
+        toplayout.addWidget(self.explain_label, 0, 0)
+        toplayout.addWidget(self.add_button, 0, 1)
+        toplayout.addWidget(self.searchbar, 0, 2)
+        toplayout.addWidget(self.combo, 1, 2)
 
-        toplayout.addWidget(QLabel("test"), 1, 0)
-        toplayout.addWidget(QLabel("test"), 1, 1)
-        toplayout.addWidget(QLabel("test"), 1, 2)
-        toplayout.addWidget(QLabel("test"), 1, 3)
-        toplayout.addWidget(QLabel("test"), 1, 4)
-        toplayout.addWidget(self.combo, 1, 5)
+        toplayout.setAlignment(self.add_button, Qt.AlignTop)
+        toplayout.setAlignment(self.combo, Qt.AlignBottom)
+        toplayout.setAlignment(self.searchbar, Qt.AlignTop)
+        toplayout.setAlignment(self.explain_label, Qt.AlignTop)
 
         self.citation_list = QTableWidget(6, 6)
         self.citation_list.setSelectionBehavior(QTableView.SelectRows)
@@ -102,6 +99,13 @@ class main_GUI(QMainWindow):
         self.citation_list.setHorizontalHeaderLabels(LABEL_TABLE)
 
         # Column widths
+        toplayout.setColumnMinimumWidth(0, 1000)
+        toplayout.setColumnMinimumWidth(1, 60)
+        toplayout.setColumnMinimumWidth(2, 100)
+        toplayout.setSpacing(50)
+        toplayout.setRowMinimumHeight(1, 50)
+        toplayout.setRowMinimumHeight(0, 50)
+
         self.citation_list.setColumnWidth(0, 60)
         self.citation_list.setColumnWidth(1, 150)
         self.citation_list.setColumnWidth(2, 400)
@@ -122,12 +126,22 @@ class main_GUI(QMainWindow):
         self.quick_copy = QAction('&Quick copy BibTex', self)
         self.quick_copy.setShortcut(QKeySequence(QUICK_COPY))
 
+        self.delete_article = QAction('&Delete Article', self)
+        self.delete_article.setShortcut(QKeySequence.Delete)
+
         # Init menu bar
-        menu = self.menuBar().addMenu('Articles')
-        menu.addAction(self.quick_copy)
-        menu.addSeparator()
-        menu.addAction(self.show_exp)
-        menu.addAction(self.move_right)
+        article_menu = self.menuBar().addMenu('Articles')
+        article_menu.addAction(self.quick_copy)
+        article_menu.addAction(self.delete_article)
+        article_menu.addSeparator()
+        article_menu.addAction(self.show_exp)
+        article_menu.addAction(self.move_right)
+        article_menu.addSeparator()
+        article_menu.addMenu('Settings')
+        article_menu.addMenu('Credits')
+
+
+
 
         maingrid.addWidget(self.citation_list, 1, 0)
         wid = QWidget(self)

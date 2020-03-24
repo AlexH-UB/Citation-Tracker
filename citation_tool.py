@@ -12,7 +12,7 @@ if sys.platform == "win32":
     from os import startfile
 
 # Own stuff
-from constants import BUTTON_COLOR_THEME1, CITATION_SAVE, SAVE_JSON, SIZE_MAIN, SIZE_ADD, SIZE_AFK, SIZE_EXP, BASE_URL
+from constants import BUTTON_COLOR_THEME1, ARTICLE_SAVE, SAVE_JSON, SIZE_MAIN, SIZE_ADD, SIZE_AFK, SIZE_EXP, BASE_URL
 from core import article
 from GUI import main_GUI, afk_GUI, add_GUI, export_GUI
 
@@ -43,8 +43,8 @@ class control:
         :return: a dictionary with all citations as citation objects or an empty dictionary if no save file was found.
         """
         # Create save folder and json save file if not there
-        if not path.exists(CITATION_SAVE):
-            mkdir(CITATION_SAVE)
+        if not path.exists(ARTICLE_SAVE):
+            mkdir(ARTICLE_SAVE)
             with open(SAVE_JSON, 'w') as f:
                 json.dump(' ', f)
         else:
@@ -82,6 +82,8 @@ class control:
 
         self.main.quick_copy.triggered.connect(self.quick_copy)
         self.main.searchbar.textChanged.connect(self.search)
+        self.main.add_button.clicked.connect(self.add_and)
+        self.main.delete_article.triggered.connect(self.delete_row)
 
     def search(self):
         """Search for a string in all articles name, tags and BibTex citation. Creates a filtered list of articles and
@@ -90,33 +92,97 @@ class control:
         """
 
         # Search text
-        text = self.main.searchbar.text().lower()
+        text = self.main.searchbar.text().lower().replace(' ', '|a|')
+
+        s_text = text.split('|a|')
 
         res = []
         # Go through all articles and search for the text in the contents
         for ind, art in self.all_articles.items():
-            add = False
+            add = {t: False for t in s_text}
 
             # Search for text in BibTex
             for key, value in art.get_bibtex().items():
-                if text in value.lower():
-                    add = True
+                for t in s_text:
+                    if t in value.lower():
+                        add[t] = True
 
             # Search for text in name
-            if text in art.get_name().lower():
-                add = True
+            for t in s_text:
+                if t in art.get_name().lower():
+                    add[t] = True
 
             # Search for text in tags
             for el in art.get_tags():
-                if text in el.lower():
-                    add = True
+                for t in s_text:
+                    if t in el.lower():
+                        add[t] = True
 
-            if add:
+            if all(add.values()):
                 res.append(ind)
 
         # Refresh displayed articles to only those with matching words
         self.currently_displayed = [int(r) for r in res]
         self.sort_and_display_articles()
+
+    def delete_row(self):
+        """Deletes a selected row. Refreshes the other rows by "pulling them up" so the index is always correct.
+        :return: Nothing
+        """
+
+        # For now delete row works for only one row at a time
+        selected_cit = None
+        if self.main.citation_list.currentRow() >= 0:
+
+            le = len(self.main.citation_list.selectedItems())
+
+            # If number if selected rows is larger than 1
+            if le > 6:
+                for num in range(le // 6):
+                    # Add all selected article indices to a list
+                    pass
+            else:
+
+                # Only one article is selected, add index to list
+                selected_cit = self.main.citation_list.selectedItems()[0].text()
+
+            # Copy currently displayed articles
+            curr = self.currently_displayed[:]
+            self.currently_displayed = []
+
+            # Go trough all articles
+            for ind, article in self.all_articles.items():
+
+                # If its the last article break
+                if int(ind) == len(self.all_articles)-1:
+                    if int(ind) in curr:
+                        self.currently_displayed.append(int(ind)-1)
+                    break
+
+                # If its the deleted article set its value to the next article
+                elif int(ind) == int(selected_cit):
+                    self.all_articles[ind] = self.all_articles[str(int(ind)+1)]
+
+                # If deleted article is before set article to last article
+                elif int(ind) > int(selected_cit):
+                    self.all_articles[ind] = self.all_articles[str(int(ind)+1)]
+                    if int(ind) in curr:
+                        self.currently_displayed.append(int(ind)-1)
+
+                # If deleted article is still to come just add article
+                elif int(ind) < int(selected_cit):
+                    if int(ind) in curr:
+                        self.currently_displayed.append(int(ind))
+
+        # Delete duplicate article at the end
+        del self.all_articles[str(self.get_next_index()-1)]
+
+        # Refresh display and save articles to JSON file
+        self.sort_and_display_articles()
+        self.dump_to_json()
+
+    def add_and(self):
+            self.main.searchbar.setText(f'{self.main.searchbar.text()}|a|')
 
     def quick_copy(self):
         """Method to quickly copy the selected articles BibTex citation to the clipboard
@@ -149,12 +215,13 @@ class control:
         # Turn list around
         if index == 1 or index == 3:
             indices = indices[::-1]
-        print(indices)
+
         # Generate display data for the indexed articles
         fin = []
         for ind in indices:
             fin.append(self.gen_show_name(ind))
 
+        self.afk.update_num_citations()
         self.main.pop_list(fin)
 
     def gen_show_name(self, cit_index: int) -> list:
