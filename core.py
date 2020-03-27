@@ -92,7 +92,7 @@ class article:
         del bib['ENTRYTYPE']
         del bib['ID']
         for key, value in bib.items():
-            first += f'{key} = "{value}", \n\t'
+            first += f'{key} = {{{value}}}, \n\t'
         first = first[:-4]
         first += ' }'
         return first

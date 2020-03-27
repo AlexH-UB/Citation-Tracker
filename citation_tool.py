@@ -418,7 +418,7 @@ class control:
             # Check if citation is in list already
             if self.check_for_duplicate(cit):
                 if self.add.move.isChecked():
-                    cit.set_path(path.join(CITATION_SAVE, self.fp.split(path.sep)[-1]))
+                    cit.set_path(path.join(ARTICLE_SAVE, self.fp.split(path.sep)[-1]))
                     rename(self.fp, cit.get_path())
                 self.all_articles[cit.get_index()] = cit
                 self.dump_to_json()
