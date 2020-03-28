@@ -110,7 +110,7 @@ class main_GUI(QMainWindow):
         self.citation_list.setColumnWidth(1, 150)
         self.citation_list.setColumnWidth(2, 400)
         self.citation_list.setColumnWidth(3, 350)
-        self.citation_list.setColumnWidth(4, 400)
+        self.citation_list.setColumnWidth(4, 380)
         self.citation_list.setColumnWidth(5, 70)
         self.citation_list.verticalHeader().setVisible(False)
         self.citation_list.setEditTriggers(QTableWidget.NoEditTriggers)
@@ -214,6 +214,7 @@ class add_GUI(QWidget):
         self.control = control
 
         self.show()
+
 
 
 class export_GUI(QWidget):

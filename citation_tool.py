@@ -73,6 +73,7 @@ class control:
         self.main = main_GUI(SIZE_MAIN, self)
 
         # Display all articles
+        self.all_articles = self.load_articles()
         self.sort_and_display_articles()
 
         # Setting actions for main window
@@ -384,11 +385,13 @@ class control:
         """
         # Initialize add GUI
         self.add = add_GUI(SIZE_ADD, self, name)
+        self.check_bibtex()
 
         # Add connections
         self.add.accept.clicked.connect(self.new_citation)
         self.add.decline.clicked.connect(self.add.close)
         self.add.doiedit.textChanged.connect(self.doi2bibtex)
+        self.add.textedit.textChanged.connect(self.check_bibtex)
 
     def parse_latex(self, bibtexstr: str) -> dict:
         """The BibTex string that is put in the addition screen is parsed into a dictionary.
@@ -415,27 +418,38 @@ class control:
             # Init of new citation
             cit = article(ind, label, self.fp, tags, asctime(), bibtex_dict, 0)
 
-            # Check if citation is in list already
-            if self.check_for_duplicate(cit):
-                if self.add.move.isChecked():
-                    cit.set_path(path.join(ARTICLE_SAVE, self.fp.split(path.sep)[-1]))
-                    rename(self.fp, cit.get_path())
-                self.all_articles[cit.get_index()] = cit
-                self.dump_to_json()
+            if self.add.move.isChecked():
+                cit.set_path(path.join(ARTICLE_SAVE, self.fp.split(path.sep)[-1]))
+                rename(self.fp, cit.get_path())
+            self.all_articles[str(cit.get_index())] = cit
+            self.dump_to_json()
+            self.currently_displayed.append(cit.get_index())
+            if self.main is not None:
+                self.sort_and_display_articles()
 
             # update number of citations in the GUI
             self.afk.update_num_citations()
             self.add.close()
 
-    def check_for_duplicate(self, art: article) -> bool:
+    def check_for_duplicate(self, bibtex: dict) -> bool:
         """Check if a BibTex citation is already in the article list. In this case returns False otherwise True.
-        :param art: Article object
+        :param bibtex: BibTex dict
         :return: True when the object is not in the article list otherwise False
         """
-        for ind, list_cit in self.all_articles.items():
-            if art.get_bibtex() == list_cit.get_bibtex():
-                return False
-        return True
+        for ind, list_art in self.all_articles.items():
+            if bibtex == list_art.get_bibtex():
+                return True
+        return False
+
+    def check_bibtex(self):
+        if self.add.textedit.toPlainText()[0] == "@":
+
+            # Parameter for the new citation
+            bibtex_dict = self.parse_latex(self.add.textedit.toPlainText())
+            if self.check_for_duplicate(bibtex_dict):
+                self.add.accept.setEnabled(False)
+            else:
+                self.add.accept.setEnabled(True)
 
     def set_filepath(self, filep: str):
         self.fp = filep
