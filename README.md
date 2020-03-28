@@ -23,6 +23,7 @@ Create an easy to use drag and drop application that keeps track of your article
 * [x] Write correct functions to store articles
 * [x] Find DOI to BibTex python library and integrate it 
 * [x] Design Icon
+* [x] Rename articles in a defined way
 * [ ] Create how to use section on the github page
 * [ ] Create a settings window that the user can interact with
 * [ ] Add shortcuts for the credits window and the settings window 

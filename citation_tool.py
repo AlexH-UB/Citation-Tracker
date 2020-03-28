@@ -333,7 +333,10 @@ class control:
 
                 # Check if selected item is already in the export window
                 if el not in index_list:
-                    self.export.exp_cit_widget.addItem(f'{el}:\t[ {self.all_articles[el].get_name()} ]')
+                    name = self.all_articles[el].get_name()
+                    if len(name) >= 12:
+                        name = f'{name[:13]}...'
+                    self.export.exp_cit_widget.addItem(f'{el}:\t[ {name} ]')
 
     def exp_push_cit_left(self):
         """Remove citation from the export list.
@@ -358,8 +361,9 @@ class control:
         """
         citations = self.help_get_string_rep()
         name = self.export.get_savefile_dialog()
-        with open(name, 'w') as save:
-            save.write(citations)
+        if name is not '':
+            with open(name, 'w') as save:
+                save.write(citations)
 
     def help_get_string_rep(self) -> str:
         """Use a list of all indices that are in in the export list to generate a string representation of all
@@ -385,12 +389,12 @@ class control:
         """
         # Initialize add GUI
         self.add = add_GUI(SIZE_ADD, self, name)
-        self.check_bibtex()
+        self.add.accept.setEnabled(False)
 
         # Add connections
         self.add.accept.clicked.connect(self.new_citation)
         self.add.decline.clicked.connect(self.add.close)
-        self.add.doiedit.textChanged.connect(self.doi2bibtex)
+        self.add.doiedit.editingFinished.connect(self.doi2bibtex)
         self.add.textedit.textChanged.connect(self.check_bibtex)
 
     def parse_latex(self, bibtexstr: str) -> dict:
@@ -419,7 +423,12 @@ class control:
             cit = article(ind, label, self.fp, tags, asctime(), bibtex_dict, 0)
 
             if self.add.move.isChecked():
-                cit.set_path(path.join(ARTICLE_SAVE, self.fp.split(path.sep)[-1]))
+                cit_title = cit.get_bibtex()["title"].lower().replace(" ", "_").replace(".", "").replace(",","")
+                if len(cit_title) > 50:
+                    cit_title = cit_title[:50]
+                title = f'{cit.get_index()}_{cit_title}.pdf'
+                print(title)
+                cit.set_path(path.join(ARTICLE_SAVE, title))
                 rename(self.fp, cit.get_path())
             self.all_articles[str(cit.get_index())] = cit
             self.dump_to_json()
@@ -431,25 +440,31 @@ class control:
             self.afk.update_num_citations()
             self.add.close()
 
-    def check_for_duplicate(self, bibtex: dict) -> bool:
-        """Check if a BibTex citation is already in the article list. In this case returns False otherwise True.
-        :param bibtex: BibTex dict
-        :return: True when the object is not in the article list otherwise False
-        """
-        for ind, list_art in self.all_articles.items():
-            if bibtex == list_art.get_bibtex():
-                return True
-        return False
-
     def check_bibtex(self):
-        if self.add.textedit.toPlainText()[0] == "@":
-
-            # Parameter for the new citation
+        """Check if the text in the text field is already in the article list as bibtex citation. If this is the case
+        the accept button is disabled. In case no text is provided in the text field the button is disabled as well.
+        :return: Nothing
+        """
+        if self.add.textedit.toPlainText() != '' and self.add.textedit.toPlainText()[0] == "@":
+            error = "- [ The article seems to be in your system already! ] -"
+            # Get text from text edit
             bibtex_dict = self.parse_latex(self.add.textedit.toPlainText())
-            if self.check_for_duplicate(bibtex_dict):
-                self.add.accept.setEnabled(False)
-            else:
+
+            # Loop through all articles in the list
+            for ind, list_art in self.all_articles.items():
+
+                # If BibTex is in the list, disable the button
                 self.add.accept.setEnabled(True)
+                if bibtex_dict == list_art.get_bibtex():
+                    self.add.accept.setEnabled(False)
+                    self.add.textedit.setPlainText(error)
+
+            if self.add.textedit.toPlainText() == error:
+                self.add.accept.setEnabled(False)
+
+        # In all other cases the button is disabled
+        else:
+            self.add.accept.setEnabled(False)
 
     def set_filepath(self, filep: str):
         self.fp = filep
@@ -461,16 +476,19 @@ class control:
         """
 
         # Thanks to https://scipython.com/blog/doi-to-bibtex/
-        url = BASE_URL + self.add.doiedit.text()
-        req = urllib.request.Request(url)
-        req.add_header('Accept', 'application/x-bibtex')
+        DOI = self.add.doiedit.text()
+        if DOI != '':
+            url = BASE_URL + DOI
+            req = urllib.request.Request(url)
+            req.add_header('Accept', 'application/x-bibtex')
 
-        try:
-            with urllib.request.urlopen(req) as f:
-                self.add.textedit.setPlainText(f.read().decode())
+            try:
+                with urllib.request.urlopen(req) as f:
+                    self.add.textedit.setPlainText(f.read().decode())
 
-        except:
-            print("DOI not found!")
+            except:
+                self.add.textedit.setPlainText("- [ The DOI could not be identified by the system."
+                                               " Please paste your BibTex information here! ] -")
 
     # Save citations to json file
 
