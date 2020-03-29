@@ -217,6 +217,12 @@ class control:
     def show_settings(self):
         self.settings_dialog = settings_dialog(SIZE_SET, self.settings)
 
+        # Reposition export GUI next to main GUI
+        mainpos = self.main.pos()
+        # Relocate the export window
+        mainsize = self.main.geometry()
+        self.settings_dialog.relocate(mainpos.x() + mainsize.width() + 6, mainpos.y() + 29)
+
         self.settings_dialog.cancel.clicked.connect(self.settings_dialog.close)
         self.settings_dialog.back.clicked.connect(lambda state, x=1: self.settings_dialog.pick_color(x))
         self.settings_dialog.font.clicked.connect(lambda state, x=2: self.settings_dialog.pick_color(x))

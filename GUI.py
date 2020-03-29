@@ -425,6 +425,14 @@ class settings_dialog(QWidget):
 
         return dic
 
+    def relocate(self, x, y):
+        """Relocates the export GUI to the coordinate x and y.
+        :param x: horizontal coordinate
+        :param y: vertical coordinate
+        :return: Nothing
+        """
+        self.move(x, y)
+
 
 def show_dialog(text):
     msgBox = QMessageBox()

@@ -64,13 +64,13 @@ EXPLAIN_TEXT = f'Welcome to {NAME}. The purpose of this app is to help you keep 
 TITLE_MAIN = f'Main Interaction Point - {NAME}'
 TITLE_ADD = f'Add a Citation - {NAME}'
 TITLE_EXPORT = 'Export your citations'
-TITLE_SETTINGS = f'Settings - {NAME}'
+TITLE_SETTINGS = f'Settings'
 
 # Window Sizes
 
 SIZE_ADD = (500, 500)
 SIZE_EXP = (400, 650)
-SIZE_SET = (400, 600)
+SIZE_SET = (400, 650)
 
 SIZE_AND_BUTTON = (60, 30)
 
