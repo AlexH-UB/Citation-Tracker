@@ -1,16 +1,17 @@
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QGridLayout, QTextEdit, QCheckBox, \
     QDesktopWidget, QMainWindow, QListWidget, QTableWidget, QTableWidgetItem, QTableView, QComboBox, \
-    QFileDialog, QAction
+    QFileDialog, QAction, QDialog, QColorDialog, QMessageBox
 
 from os import path
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QFont, QKeySequence, QIcon
+from PyQt5.uic.properties import QtWidgets
 
 from constants import EXAMPLE_CITATION, TITLE_ADD, TITLE_MAIN, LABEL_NAME, LABEL_TAGS, LABEL_BIBTEX, FONT_SIZE, \
-    TITLE_EXPORT, LABEL_TABLE, MOVE_RIGHT, QUICK_COPY, OPEN_EXPORT, LOGO_PATH, SIZE_AND_BUTTON, EXPLAIN_TEXT,\
-    HIDE_EXPLAIN
+    TITLE_EXPORT, LABEL_TABLE, MOVE_RIGHT, QUICK_COPY, OPEN_EXPORT, LOGO_PATH, SIZE_AND_BUTTON, EXPLAIN_TEXT, \
+    SHORTCUTS, TITLE_SETTINGS
 
 
 class afk_GUI(QWidget):
@@ -23,6 +24,7 @@ class afk_GUI(QWidget):
         self.control = control
         self.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
         self.move_window()
+        self.setWindowIcon(QIcon(LOGO_PATH))
 
         # Setting up the main button
         num_cit = self.control.get_next_index()
@@ -50,7 +52,7 @@ class afk_GUI(QWidget):
 
 class main_GUI(QMainWindow):
 
-    def __init__(self, wh, control):
+    def __init__(self, wh, control, hide_explain, shortcuts):
         super().__init__()
 
         # Setting up the side GUI
@@ -79,7 +81,7 @@ class main_GUI(QMainWindow):
         self.explain_label = QLabel(EXPLAIN_TEXT)
         self.explain_label.setWordWrap(True)
         self.explain_label.setOpenExternalLinks(True)
-        self.explain_label.setVisible(not HIDE_EXPLAIN)
+        self.explain_label.setVisible(not hide_explain)
 
         toplayout.addWidget(self.explain_label, 0, 0)
         toplayout.addWidget(self.add_button, 0, 1)
@@ -118,16 +120,19 @@ class main_GUI(QMainWindow):
         # Actions
 
         self.move_right = QAction('&Move to export', self)
-        self.move_right.setShortcut(QKeySequence(MOVE_RIGHT))
+        self.move_right.setShortcut(QKeySequence(shortcuts['Move citation to export:']))
 
         self.show_exp = QAction('&Open export', self)
-        self.show_exp.setShortcut(QKeySequence(OPEN_EXPORT))
+        self.show_exp.setShortcut(QKeySequence(shortcuts['Open the export window:']))
 
         self.quick_copy = QAction('&Quick copy BibTex', self)
-        self.quick_copy.setShortcut(QKeySequence(QUICK_COPY))
+        self.quick_copy.setShortcut(QKeySequence(shortcuts['Quick copy a citation:']))
 
         self.delete_article = QAction('&Delete Article', self)
         self.delete_article.setShortcut(QKeySequence.Delete)
+
+        self.show_settings = QAction('&Settings', self)
+        self.show_settings.setShortcut(QKeySequence(shortcuts['Show the settings menu:']))
 
         # Init menu bar
         article_menu = self.menuBar().addMenu('Articles')
@@ -137,11 +142,8 @@ class main_GUI(QMainWindow):
         article_menu.addAction(self.show_exp)
         article_menu.addAction(self.move_right)
         article_menu.addSeparator()
-        article_menu.addMenu('Settings')
+        article_menu.addAction(self.show_settings)
         article_menu.addMenu('Credits')
-
-
-
 
         maingrid.addWidget(self.citation_list, 1, 0)
         wid = QWidget(self)
@@ -216,7 +218,6 @@ class add_GUI(QWidget):
         self.show()
 
 
-
 class export_GUI(QWidget):
 
     def __init__(self, wh, control):
@@ -289,3 +290,147 @@ class dnd_button(QPushButton):
     def dropEvent(self, e):
         self.parent.control.show_add(e.mimeData().text().split(path.sep)[-1][:-4])
         self.parent.control.set_filepath(e.mimeData().text()[7:])
+
+
+class settings_dialog(QWidget):
+
+    def __init__(self, wh, settings):
+        super().__init__()
+        self.resize(QSize(wh[0], wh[1]))
+        self.setWindowIcon(QIcon(LOGO_PATH))
+        self.setWindowTitle(TITLE_SETTINGS)
+
+        size_main = settings['SIZE_MAIN']
+        size_afk = settings['SIZE_AFK']
+        button_color = settings['BUTTON_COLOR']
+        hide_explain = settings['HIDE_EXPLAIN']
+
+        # Initialize grid layout
+
+        grid = QGridLayout()
+        grid.setSpacing(10)
+
+        # Initialize widgets
+        setting = QLabel('Settings')
+        font1 = QFont()
+        font1.setBold(True)
+        setting.setFont(font1)
+
+        grid.addWidget(setting, 0, 0)
+        grid.addWidget(QLabel('Size main (px):'), 1, 0)
+        self.main_width = QLineEdit(str(size_main[0]))
+        self.main_height = QLineEdit(str(size_main[1]))
+        grid.addWidget(self.main_width, 1, 1)
+        grid.addWidget(self.main_height, 1, 2)
+
+        grid.addWidget(QLabel('Size afk  (px):'), 2, 0)
+        self.afk_width = QLineEdit(str(size_afk[0]))
+        self.afk_height = QLineEdit(str(size_afk[1]))
+        grid.addWidget(self.afk_width, 2, 1)
+        grid.addWidget(self.afk_height, 2, 2)
+
+        grid.addWidget(QLabel('Background'), 3, 1, alignment=Qt.AlignBottom)
+        grid.addWidget(QLabel('Font'), 3, 2, alignment=Qt.AlignBottom)
+
+        grid.addWidget(QLabel('Button color theme:'), 4, 0)
+        self.back = QPushButton(button_color[0])
+        self.back.setStyleSheet(f'background-color: {button_color[0]}; color: black')
+        self.font = QPushButton(button_color[1])
+        self.font.setStyleSheet(f'background-color: {button_color[1]}; color: black')
+        grid.addWidget(self.back, 4, 1)
+        grid.addWidget(self.font, 4, 2)
+
+        grid.addWidget(QLabel('Hide explain text:'), 5, 0)
+        self.checkbox = QCheckBox('')
+        self.checkbox.setChecked(hide_explain)
+        grid.addWidget(self.checkbox, 5, 1)
+
+        short = QLabel('Shortcuts:')
+        short.setFont(font1)
+        short.setAlignment(Qt.AlignBottom)
+        grid.addWidget(short, 6, 0)
+
+        self.table = QTableWidget(len(SHORTCUTS.keys()), 2)
+        self.table.verticalHeader().setVisible(False)
+        self.table.horizontalHeader().setVisible(False)
+        self.table.setColumnWidth(0, 275)
+        self.table.setColumnWidth(1, 100)
+
+        c = 0
+        for text, value in SHORTCUTS.items():
+            item = QTableWidgetItem(text)
+            item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+            self.table.setItem(c, 0, item)
+            item.setTextAlignment(Qt.AlignVCenter)
+
+            item = QTableWidgetItem(value)
+            self.table.setItem(c, 1, item)
+            item.setTextAlignment(Qt.AlignVCenter)
+            c += 1
+
+        grid.addWidget(self.table, 7, 0, 3, 3)
+
+        self.cancel = QPushButton('Cancel')
+        self.cancel.setFixedWidth(125)
+
+        self.save = QPushButton('Save')
+        self.save.setFixedWidth(125)
+        grid.addWidget(self.cancel, 10, 0)
+        grid.addWidget(self.save, 10, 2)
+
+        self.setLayout(grid)
+        self.show()
+
+    def pick_color(self, b):
+        co = QColorDialog.getColor().name()
+        if co is not None:
+            if b == 1:
+                self.back.setText(co)
+                self.back.setStyleSheet(f'background-color: {co}')
+
+            elif b == 2:
+                self.font.setText(co)
+                self.font.setStyleSheet(f'background-color: {co}')
+
+    def ret_settings(self) -> dict:
+        dic = {}
+        try:
+            main_w = int(self.main_width.text())
+            main_h = int(self.main_height.text())
+            if main_w > 0 and main_h > 0:
+                dic['SIZE_MAIN'] = (main_w, main_h)
+        except:
+            show_dialog('Main Size is required to be over 0 and with only numberical characters!')
+
+        try:
+            afk_w = int(self.afk_width.text())
+            afk_h = int(self.afk_height.text())
+            if afk_w > 0 and afk_h > 0:
+                dic['SIZE_AFK'] = (afk_w, afk_h)
+        except:
+            show_dialog('Afk Size is required to be over 0 and with only numberical characters!')
+
+        dic['BUTTON_COLOR'] = (self.back.text(), self.font.text())
+        dic['HIDE_EXPLAIN'] = self.checkbox.isChecked()
+
+        s_dic = {}
+        save = None
+        for row in range(self.table.rowCount()):
+            for column in range(self.table.columnCount()):
+                if column == 0:
+                    save = self.table.item(row, column).text()
+                elif column == 1:
+                    s_dic[save] = self.table.item(row, column).text()
+        dic['SHORTCUTS'] = s_dic
+
+        return dic
+
+
+def show_dialog(text):
+    msgBox = QMessageBox()
+    msgBox.setIcon(QMessageBox.Information)
+    msgBox.setText(text)
+    msgBox.setWindowTitle("Error!")
+    msgBox.setStandardButtons(QMessageBox.Ok)
+    msgBox.buttonClicked.connect(msgBox.close)
+    msgBox.exec()

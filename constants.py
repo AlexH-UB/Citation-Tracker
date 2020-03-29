@@ -59,20 +59,18 @@ EXPLAIN_TEXT = f'Welcome to {NAME}. The purpose of this app is to help you keep 
                f'<a href="https://github.com/AlexH-UB/Citation-Tracker">How to use page on my Github</a>. Thanks ' \
                f'for using.'
 
-HIDE_EXPLAIN = False
-
 # Window titles
 
 TITLE_MAIN = f'Main Interaction Point - {NAME}'
 TITLE_ADD = f'Add a Citation - {NAME}'
 TITLE_EXPORT = 'Export your citations'
+TITLE_SETTINGS = f'Settings - {NAME}'
 
 # Window Sizes
 
-SIZE_MAIN = (1450, 650)
 SIZE_ADD = (500, 500)
-SIZE_EXP = (400, SIZE_MAIN[1])
-SIZE_AFK = (50, 50)
+SIZE_EXP = (400, 650)
+SIZE_SET = (400, 600)
 
 SIZE_AND_BUTTON = (60, 30)
 
@@ -87,21 +85,31 @@ LABEL_TABLE = ["index", "name", "tags", "title", "authors", "year"]
 
 BASE_URL = 'http://dx.doi.org/'
 
-# Color themes
-
-BUTTON_COLOR_THEME1 = ('slategray', 'white')
-
 # Folders
 HOME = expanduser("~")
 ARTICLE_SAVE = join(HOME, ".articles")
 SAVE_JSON = join(ARTICLE_SAVE, "articles.json")
+SETTINGS_JSON = join(ARTICLE_SAVE, "settings.json")
 IMAGE_PATH = 'imgs' + sep
 LOGO_PATH = join(IMAGE_PATH, 'logo.png')
 
 # Shortcuts
-
 MOVE_RIGHT = 'Ctrl+x'
 MOVE_LEFT = 'Ctrl+y'
 OPEN_EXPORT = 'Ctrl+e'
 QUICK_COPY = 'Ctrl+c'
+SHOW_SET = 'Ctrl+q'
 
+
+SHORTCUTS = {'Move citation to export:': MOVE_RIGHT,
+             'Remove citation from export:': MOVE_LEFT,
+             'Open the export window:': OPEN_EXPORT,
+             'Quick copy a citation:': QUICK_COPY,
+             'Show the settings menu:': SHOW_SET}
+
+
+STANDARD_SETTINGS = {'SIZE_MAIN': (1450, 650),
+                     'SIZE_AFK': (50, 50),
+                     'BUTTON_COLOR': ("#708090", "#FFFFFF"),
+                     'HIDE_EXPLAIN': False,
+                     'SHORTCUTS': SHORTCUTS}

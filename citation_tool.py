@@ -8,13 +8,14 @@ from bibtexparser.bparser import BibTexParser
 from PyQt5.QtWidgets import QApplication
 from time import asctime
 from os import path, mkdir, rename
+
 if sys.platform == "win32":
     from os import startfile
 
 # Own stuff
-from constants import BUTTON_COLOR_THEME1, ARTICLE_SAVE, SAVE_JSON, SIZE_MAIN, SIZE_ADD, SIZE_AFK, SIZE_EXP, BASE_URL
+from constants import ARTICLE_SAVE, SAVE_JSON, SIZE_ADD, SIZE_EXP, BASE_URL, SIZE_SET, SETTINGS_JSON, STANDARD_SETTINGS
 from core import article
-from GUI import main_GUI, afk_GUI, add_GUI, export_GUI
+from GUI import main_GUI, afk_GUI, add_GUI, export_GUI, settings_dialog, show_dialog
 
 
 class control:
@@ -24,18 +25,38 @@ class control:
     def __init__(self):
         # Init articles
         self.all_articles = self.load_articles()
+        self.settings = self.load_settings()
+
         self.fp = None
         self.screensize = None
         self.currently_displayed = list(range(len(self.all_articles)))
+        self.settings_dialog = settings_dialog(SIZE_SET, self.settings)
 
         # Init afk control gui
-        self.afk = afk_GUI(SIZE_AFK, color=BUTTON_COLOR_THEME1, control=self)
+        self.afk = afk_GUI(self.settings['SIZE_AFK'], color=self.settings['BUTTON_COLOR'], control=self)
         self.main = None
         self.add = None
         self.export = None
+        self.settings_dialog = None
 
         # When the button is clicked the main window opens
         self.afk.button.clicked.connect(self.show_main)
+
+    def load_settings(self) -> dict:
+        # Create save folder and json save file if not there
+        if not path.exists(ARTICLE_SAVE):
+            mkdir(ARTICLE_SAVE)
+            with open(SETTINGS_JSON, 'w') as f:
+                json.dump(STANDARD_SETTINGS, f)
+        else:
+            if not path.exists(SETTINGS_JSON):
+                with open(SETTINGS_JSON, 'w') as f:
+                    json.dump(STANDARD_SETTINGS, f)
+            else:
+                with open(SETTINGS_JSON, 'r') as f:
+                    dic = json.load(f)
+                    return dic
+        return {}
 
     def load_articles(self) -> dict:
         """Checks if a .citation folder was created in the home directory before and if not it creates a new one.
@@ -70,7 +91,10 @@ class control:
         :return: Nothing
         """
         # Initialize main GUI
-        self.main = main_GUI(SIZE_MAIN, self)
+        self.main = main_GUI(self.settings['SIZE_MAIN'],
+                             self,
+                             self.settings['HIDE_EXPLAIN'],
+                             self.settings['SHORTCUTS'])
 
         # Display all articles
         self.all_articles = self.load_articles()
@@ -85,6 +109,7 @@ class control:
         self.main.searchbar.textChanged.connect(self.search)
         self.main.add_button.clicked.connect(self.add_and)
         self.main.delete_article.triggered.connect(self.delete_row)
+        self.main.show_settings.triggered.connect(self.show_settings)
 
     def search(self):
         """Search for a string in all articles name, tags and BibTex citation. Creates a filtered list of articles and
@@ -155,9 +180,9 @@ class control:
             for ind, article in self.all_articles.items():
 
                 # If its the last article break
-                if int(ind) == len(self.all_articles)-1 and int(ind) != int(selected_cit):
+                if int(ind) == len(self.all_articles) - 1 and int(ind) != int(selected_cit):
                     if int(ind) in curr:
-                        self.currently_displayed.append(int(ind)-1)
+                        self.currently_displayed.append(int(ind) - 1)
                     break
 
                 # If deleted article is the last one just break
@@ -166,13 +191,13 @@ class control:
 
                 # If its the deleted article set its value to the next article
                 elif int(ind) == int(selected_cit):
-                    self.all_articles[ind] = self.all_articles[str(int(ind)+1)]
+                    self.all_articles[ind] = self.all_articles[str(int(ind) + 1)]
 
                 # If deleted article is before set article to last article
                 elif int(ind) > int(selected_cit):
-                    self.all_articles[ind] = self.all_articles[str(int(ind)+1)]
+                    self.all_articles[ind] = self.all_articles[str(int(ind) + 1)]
                     if int(ind) in curr:
-                        self.currently_displayed.append(int(ind)-1)
+                        self.currently_displayed.append(int(ind) - 1)
 
                 # If deleted article is still to come just add article
                 elif int(ind) < int(selected_cit):
@@ -180,14 +205,28 @@ class control:
                         self.currently_displayed.append(int(ind))
 
             # Delete duplicate article at the end
-            del self.all_articles[str(self.get_next_index()-1)]
+            del self.all_articles[str(self.get_next_index() - 1)]
 
             # Refresh display and save articles to JSON file
             self.sort_and_display_articles()
             self.dump_to_json()
 
     def add_and(self):
-            self.main.searchbar.setText(f'{self.main.searchbar.text()}|a|')
+        self.main.searchbar.setText(f'{self.main.searchbar.text()}|a|')
+
+    def show_settings(self):
+        self.settings_dialog = settings_dialog(SIZE_SET, self.settings)
+
+        self.settings_dialog.cancel.clicked.connect(self.settings_dialog.close)
+        self.settings_dialog.back.clicked.connect(lambda state, x=1: self.settings_dialog.pick_color(x))
+        self.settings_dialog.font.clicked.connect(lambda state, x=2: self.settings_dialog.pick_color(x))
+        self.settings_dialog.save.clicked.connect(self.change_settings)
+
+    def change_settings(self):
+        self.settings = self.settings_dialog.ret_settings()
+        with open(SETTINGS_JSON, "w") as file:
+            json.dump(self.settings, file)
+        show_dialog("Files were successfully saved!")
 
     def quick_copy(self):
         """Method to quickly copy the selected articles BibTex citation to the clipboard
@@ -271,8 +310,6 @@ class control:
         # Windows
         else:
             startfile(filepath)
-
-
 
     def get_next_index(self) -> int:
         """Returns the next index of the main window citation list
@@ -423,7 +460,7 @@ class control:
             cit = article(ind, label, self.fp, tags, asctime(), bibtex_dict, 0)
 
             if self.add.move.isChecked():
-                cit_title = cit.get_bibtex()["title"].lower().replace(" ", "_").replace(".", "").replace(",","")
+                cit_title = cit.get_bibtex()["title"].lower().replace(" ", "_").replace(".", "").replace(",", "")
                 if len(cit_title) > 50:
                     cit_title = cit_title[:50]
                 title = f'{cit.get_index()}_{cit_title}.pdf'
@@ -476,9 +513,9 @@ class control:
         """
 
         # Thanks to https://scipython.com/blog/doi-to-bibtex/
-        DOI = self.add.doiedit.text()
-        if DOI != '':
-            url = BASE_URL + DOI
+        doi = self.add.doiedit.text()
+        if doi != '':
+            url = BASE_URL + doi
             req = urllib.request.Request(url)
             req.add_header('Accept', 'application/x-bibtex')
 
