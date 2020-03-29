@@ -25,7 +25,8 @@ Create an easy to use drag and drop application that keeps track of your article
 * [x] Design Icon
 * [x] Rename articles in a defined way
 * [ ] Create how to use section on the github page
-* [ ] Create a settings window that the user can interact with
-* [ ] Add shortcuts for the credits window and the settings window 
+* [x] Create a settings window that the user can interact with
+* [ ] Create credits window
+* [x] Add shortcuts for the credits window and the settings window 
 
 ---
