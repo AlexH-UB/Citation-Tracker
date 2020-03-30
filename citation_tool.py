@@ -43,6 +43,9 @@ class control:
         self.afk.button.clicked.connect(self.show_main)
 
     def load_settings(self) -> dict:
+        """Loads the settings from the setting JSON file, if it does not exist, it is created with standard settings.
+        :return: Settings as dict
+        """
         # Create save folder and json save file if not there
         if not path.exists(ARTICLE_SAVE):
             mkdir(ARTICLE_SAVE)
@@ -212,6 +215,9 @@ class control:
             self.dump_to_json()
 
     def add_and(self):
+        """Add |a| to the searchbar to add multiple searches together.
+        :return: Nothing
+        """
         self.main.searchbar.setText(f'{self.main.searchbar.text()}|a|')
 
     def show_settings(self):
@@ -229,10 +235,16 @@ class control:
         self.settings_dialog.save.clicked.connect(self.change_settings)
 
     def change_settings(self):
-        self.settings = self.settings_dialog.ret_settings()
+        """Changes the settings of the windows to user input settings in the settings window.
+        :return: Nothing
+        """
+        if self.settings_dialog.ret_settings() != {}:
+            self.settings = self.settings_dialog.ret_settings()
+        else:
+            return
         with open(SETTINGS_JSON, "w") as file:
             json.dump(self.settings, file)
-        show_dialog("Files were successfully saved!")
+        show_dialog("Files were successfully saved!", 'Success!')
 
     def quick_copy(self):
         """Method to quickly copy the selected articles BibTex citation to the clipboard
@@ -432,13 +444,11 @@ class control:
         """
         # Initialize add GUI
         self.add = add_GUI(SIZE_ADD, self, name)
-        self.add.accept.setEnabled(False)
 
         # Add connections
         self.add.accept.clicked.connect(self.new_citation)
         self.add.decline.clicked.connect(self.add.close)
         self.add.doiedit.editingFinished.connect(self.doi2bibtex)
-        self.add.textedit.textChanged.connect(self.check_bibtex)
 
     def parse_latex(self, bibtexstr: str) -> dict:
         """The BibTex string that is put in the addition screen is parsed into a dictionary.
@@ -454,7 +464,7 @@ class control:
         specify the BibTex information and the name. The citation list is immediately saved in the JSON save file.
         :return: Nothing
         """
-        if self.add.textedit.toPlainText()[0] == "@":
+        if self.add.textedit.toPlainText()[0] == "@" and self.add.textedit.toPlainText()[-1] == "}":
 
             # Parameter for the new citation
             bibtex_dict = self.parse_latex(self.add.textedit.toPlainText())
@@ -465,19 +475,19 @@ class control:
             # Init of new citation
             cit = article(ind, label, self.fp, tags, asctime(), bibtex_dict, 0)
 
-            if self.add.move.isChecked():
-                cit_title = cit.get_bibtex()["title"].lower().replace(" ", "_").replace(".", "").replace(",", "")
-                if len(cit_title) > 50:
-                    cit_title = cit_title[:50]
-                title = f'{cit.get_index()}_{cit_title}.pdf'
-                print(title)
-                cit.set_path(path.join(ARTICLE_SAVE, title))
-                rename(self.fp, cit.get_path())
-            self.all_articles[str(cit.get_index())] = cit
-            self.dump_to_json()
-            self.currently_displayed.append(cit.get_index())
-            if self.main is not None:
-                self.sort_and_display_articles()
+            if self.check_bibtex():
+                if self.add.move.isChecked():
+                    cit_title = cit.get_bibtex()["title"].lower().replace(" ", "_").replace(".", "").replace(",", "")
+                    if len(cit_title) > 50:
+                        cit_title = cit_title[:50]
+                    title = f'{cit.get_index()}_{cit_title}.pdf'
+                    cit.set_path(path.join(ARTICLE_SAVE, title))
+                    rename(self.fp, cit.get_path())
+                self.all_articles[str(cit.get_index())] = cit
+                self.dump_to_json()
+                self.currently_displayed.append(cit.get_index())
+                if self.main is not None:
+                    self.sort_and_display_articles()
 
             # update number of citations in the GUI
             self.afk.update_num_citations()
@@ -489,25 +499,18 @@ class control:
         :return: Nothing
         """
         if self.add.textedit.toPlainText() != '' and self.add.textedit.toPlainText()[0] == "@":
-            error = "- [ The article seems to be in your system already! ] -"
+            error = "The article seems to be in your system already!"
             # Get text from text edit
             bibtex_dict = self.parse_latex(self.add.textedit.toPlainText())
 
             # Loop through all articles in the list
             for ind, list_art in self.all_articles.items():
 
-                # If BibTex is in the list, disable the button
-                self.add.accept.setEnabled(True)
                 if bibtex_dict == list_art.get_bibtex():
                     self.add.accept.setEnabled(False)
-                    self.add.textedit.setPlainText(error)
-
-            if self.add.textedit.toPlainText() == error:
-                self.add.accept.setEnabled(False)
-
-        # In all other cases the button is disabled
-        else:
-            self.add.accept.setEnabled(False)
+                    show_dialog(error, 'Error!')
+                    return False
+            return True
 
     def set_filepath(self, filep: str):
         self.fp = filep

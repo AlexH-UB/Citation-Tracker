@@ -20,8 +20,8 @@ Create an easy to use drag and drop application that keeps track of your article
 
 ---
 
-## How to use
-
+## User guide
+---
 #### 1. General
 
 ![](imgs/afk_GUI.png)
@@ -35,7 +35,7 @@ There two ways to interact with the window:
 2. Click on the window to open the Main interaction Point
 
 
-
+---
 
 #### 2. Adding articles
 
@@ -63,7 +63,7 @@ Adding an article with its DOI
 
 4. Move file: The application creates a hidden folder in your home directory and if you check the move file mark your
 articles will be moved to the folder and renamed with their index and title. 
-
+---
 #### 3. Main Interaction Point
 
 ![](imgs/main_GUI.png)
@@ -72,7 +72,7 @@ The primary goal of the main interaction point is to display your articles and l
 function. Further, you can open the article PDFs by double clicking the article in the list. When you open an article,
 its relevance score will increase, resulting in a ranking based on how much you opened/used the articles when you sort 
 the articles for relevance.
-
+---
 #### 4. Exporting citations
 
 The first way to export your articles/citations is to use the shortcut for quick copy, which will copy the BibTex of
@@ -87,7 +87,7 @@ If you plan to export multiple article citations I advice you to use the export 
 Use the provided shortcut or press the right arrow button to add your selected article or articles to the export window
 (Standard shortcut -> Ctrl+x). Remove articles with the left arrow. When you are happy with your selection, use the 
 Copy button to copy all citations to your clipboard or create a BibTex file (.bib) with the Export to BibTex button.
-
+---
 #### 5. Settings
 
 Customize your window sizes, their looks and the shortcuts using the settings window (Standard shortcut -> Ctrl+q).

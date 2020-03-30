@@ -1,17 +1,15 @@
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QGridLayout, QTextEdit, QCheckBox, \
     QDesktopWidget, QMainWindow, QListWidget, QTableWidget, QTableWidgetItem, QTableView, QComboBox, \
-    QFileDialog, QAction, QDialog, QColorDialog, QMessageBox
+    QFileDialog, QAction, QColorDialog, QMessageBox
 
 from os import path
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QFont, QKeySequence, QIcon
-from PyQt5.uic.properties import QtWidgets
 
-from constants import EXAMPLE_CITATION, TITLE_ADD, TITLE_MAIN, LABEL_NAME, LABEL_TAGS, LABEL_BIBTEX, FONT_SIZE, \
-    TITLE_EXPORT, LABEL_TABLE, MOVE_RIGHT, QUICK_COPY, OPEN_EXPORT, LOGO_PATH, SIZE_AND_BUTTON, EXPLAIN_TEXT, \
-    SHORTCUTS, TITLE_SETTINGS
+from constants import TITLE_ADD, TITLE_MAIN, LABEL_NAME, LABEL_TAGS, LABEL_BIBTEX, FONT_SIZE, \
+    TITLE_EXPORT, LABEL_TABLE, LOGO_PATH, SIZE_AND_BUTTON, EXPLAIN_TEXT, TITLE_SETTINGS
 
 
 class afk_GUI(QWidget):
@@ -197,7 +195,7 @@ class add_GUI(QWidget):
         self.latexlab = QLabel(LABEL_BIBTEX)
         self.latexlab.setAlignment(Qt.AlignTop)
         grid.addWidget(self.latexlab, 3, 0)
-        self.textedit = QTextEdit(EXAMPLE_CITATION)
+        self.textedit = QTextEdit('')
         grid.addWidget(self.textedit, 3, 1, 2, 1)
 
         # Add Accept and cancel button
@@ -350,14 +348,14 @@ class settings_dialog(QWidget):
         short.setAlignment(Qt.AlignBottom)
         grid.addWidget(short, 6, 0)
 
-        self.table = QTableWidget(len(SHORTCUTS.keys()), 2)
+        self.table = QTableWidget(len(settings['SHORTCUTS'].keys()), 2)
         self.table.verticalHeader().setVisible(False)
         self.table.horizontalHeader().setVisible(False)
         self.table.setColumnWidth(0, 275)
         self.table.setColumnWidth(1, 100)
 
         c = 0
-        for text, value in SHORTCUTS.items():
+        for text, value in settings['SHORTCUTS'].items():
             item = QTableWidgetItem(text)
             item.setFlags(item.flags() & ~Qt.ItemIsEditable)
             self.table.setItem(c, 0, item)
@@ -382,6 +380,10 @@ class settings_dialog(QWidget):
         self.show()
 
     def pick_color(self, b):
+        """Opens a color picker to determine a color.
+        :param b: 1 if background, 2 of font color.
+        :return: Nothing
+        """
         co = QColorDialog.getColor().name()
         if co is not None:
             if b == 1:
@@ -393,6 +395,9 @@ class settings_dialog(QWidget):
                 self.font.setStyleSheet(f'background-color: {co}')
 
     def ret_settings(self) -> dict:
+        """Takes all settings from the settings dialog, checks if they are correct and returns them as dict.
+        :return: User provided settings as dict or empty dict if settings have errors in them.
+        """
         dic = {}
         try:
             main_w = int(self.main_width.text())
@@ -400,7 +405,8 @@ class settings_dialog(QWidget):
             if main_w > 0 and main_h > 0:
                 dic['SIZE_MAIN'] = (main_w, main_h)
         except:
-            show_dialog('Main Size is required to be over 0 and with only numberical characters!')
+            show_dialog('Main Size is required to be over 0 and with only numberical characters!', 'Error!')
+            return {}
 
         try:
             afk_w = int(self.afk_width.text())
@@ -408,7 +414,8 @@ class settings_dialog(QWidget):
             if afk_w > 0 and afk_h > 0:
                 dic['SIZE_AFK'] = (afk_w, afk_h)
         except:
-            show_dialog('Afk Size is required to be over 0 and with only numberical characters!')
+            show_dialog('Afk Size is required to be over 0 and with only numberical characters!', 'Error!')
+            return {}
 
         dic['BUTTON_COLOR'] = (self.back.text(), self.font.text())
         dic['HIDE_EXPLAIN'] = self.checkbox.isChecked()
@@ -434,11 +441,16 @@ class settings_dialog(QWidget):
         self.move(x, y)
 
 
-def show_dialog(text):
+def show_dialog(text, title):
+    """Shows a dialog window if there are messages that need to be reported to the user.
+    :param text: Text that is on the dialog
+    :param title: Title of the dialog
+    :return: Nothing
+    """
     msgBox = QMessageBox()
     msgBox.setIcon(QMessageBox.Information)
     msgBox.setText(text)
-    msgBox.setWindowTitle("Error!")
+    msgBox.setWindowTitle(title)
     msgBox.setStandardButtons(QMessageBox.Ok)
     msgBox.buttonClicked.connect(msgBox.close)
     msgBox.exec()
