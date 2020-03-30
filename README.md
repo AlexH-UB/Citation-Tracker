@@ -72,6 +72,7 @@ The primary goal of the main interaction point is to display your articles and l
 function. Further, you can open the article PDFs by double clicking the article in the list. When you open an article,
 its relevance score will increase, resulting in a ranking based on how much you opened/used the articles when you sort 
 the articles for relevance.
+
 ---
 #### 4. Exporting citations
 
