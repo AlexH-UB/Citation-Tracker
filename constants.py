@@ -17,15 +17,17 @@ EXPLAIN_TEXT = f'Welcome to {NAME}. The purpose of this app is to help you keep 
 # Window titles
 
 TITLE_MAIN = f'Main Interaction Point - {NAME}'
-TITLE_ADD = f'Add a Citation - {NAME}'
+TITLE_ADD = f'Add an article - {NAME}'
 TITLE_EXPORT = 'Export your citations'
 TITLE_SETTINGS = f'Settings'
+TITLE_CHANGE = f'Change an article'
 
 # Window Sizes
 
 SIZE_ADD = (500, 500)
 SIZE_EXP = (400, 650)
 SIZE_SET = (400, 650)
+SIZE_CHA = (500, 500)
 
 SIZE_AND_BUTTON = (60, 30)
 
@@ -50,17 +52,17 @@ LOGO_PATH = join(IMAGE_PATH, 'logo.png')
 
 # Standard Shortcuts
 MOVE_RIGHT = 'Ctrl+x'
-MOVE_LEFT = 'Ctrl+y'
 OPEN_EXPORT = 'Ctrl+e'
 QUICK_COPY = 'Ctrl+c'
 SHOW_SET = 'Ctrl+q'
+CHANGE_ENT = 'Ctrl+d'
 
 
 SHORTCUTS = {'Move citation to export:': MOVE_RIGHT,
-             'Remove citation from export:': MOVE_LEFT,
              'Open the export window:': OPEN_EXPORT,
              'Quick copy a citation:': QUICK_COPY,
-             'Show the settings menu:': SHOW_SET}
+             'Show the settings menu:': SHOW_SET,
+             'Change entry:': CHANGE_ENT}
 
 
 STANDARD_SETTINGS = {'SIZE_MAIN': (1450, 650),
