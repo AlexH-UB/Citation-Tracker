@@ -21,7 +21,9 @@ Create an easy to use drag and drop application that keeps track of your article
 ---
 
 ## User guide
+
 ---
+
 #### 1. General
 
 ![AFK_GUI](imgs/afk_GUI.png)
@@ -33,7 +35,6 @@ There two ways to interact with the window:
 1. Add an article by dragging and dropping the PDF onto the GUI
 
 2. Click on the window to open the Main interaction Point
-
 
 ---
 
@@ -63,7 +64,9 @@ Adding an article with its DOI
 
 ![Use the DOI to add BibTex information to the article](imgs/gernerate%20BibTex%20from%20DOI.png)
  
+
 ---
+
 #### 3. Main Interaction Point
 
 ![Main Interaction Point](imgs/main_GUI.png)
@@ -74,6 +77,7 @@ its relevance score will increase, resulting in a ranking based on how much you 
 the articles for relevance.
 
 ---
+
 #### 4. Change article information
 
 ![Change an articles information](imgs/change_articles_GUI.png)
@@ -96,6 +100,7 @@ If you plan to export multiple article citations I advice you to use the export 
 Use the provided shortcut or press the right arrow button to add your selected article or articles to the export window
 (Standard shortcut -> Ctrl+x). Remove articles with the left arrow. When you are happy with your selection, use the 
 Copy button to copy all citations to your clipboard or create a BibTex file (.bib) with the Export to BibTex button.
+
 ---
 #### 6. Settings
 
