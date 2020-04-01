@@ -5,7 +5,7 @@ import json
 import urllib.request
 
 from bibtexparser.bparser import BibTexParser
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QDesktopWidget, QWidget
 from time import asctime
 from os import path, mkdir, rename
 
@@ -33,7 +33,10 @@ class control:
         self.currently_displayed = list(range(len(self.all_articles)))
 
         # Init afk control gui
-        self.afk = afk_GUI(self.settings['SIZE_AFK'], self.settings['BUTTON_COLOR'], self, self.help_get_next_index())
+        self.afk = afk_GUI(self.settings['SIZE_AFK'], self.settings['BUTTON_COLOR'], self.help_get_next_index())
+        self.afk.button.dropped.connect(self.show_add)
+
+        self.help_move_window(window=self.afk)
         self.main = None
         self.add = None
         self.export = None
@@ -51,7 +54,6 @@ class control:
         """
         # Initialize main GUI
         self.main = main_GUI(self.settings['SIZE_MAIN'],
-                             self,
                              self.settings['HIDE_EXPLAIN'],
                              self.settings['SHORTCUTS'])
 
@@ -184,7 +186,7 @@ class control:
         if self.main.citation_list.currentRow() >= 0:
             selected_art = self.main.citation_list.selectedItems()[0].text()
             art = self.all_articles[selected_art]
-            self.change_art = change_article_GUI(SIZE_CHA, self, art.get_dict(), art.bibtex_to_string())
+            self.change_art = change_article_GUI(SIZE_CHA, art.get_dict(), art.bibtex_to_string())
 
             self.change_art.accept.clicked.connect(lambda: self.main_change_citation(selected_art))
             self.change_art.decline.clicked.connect(self.change_art.close)
@@ -210,7 +212,7 @@ class control:
             tags = self.change_art.tagsedit.text().split(',')
 
             # Init of new citation
-            cit = article(ind, label, self.fp, tags, asctime(), bibtex_dict, 0)
+            cit = article(ind, label, self.all_articles[ind]['path'], tags, asctime(), bibtex_dict, 0)
             del self.all_articles[ind]
 
             if self.help_check_bibtex(bibtex_dict):
@@ -262,7 +264,7 @@ class control:
         for ind in indices:
             fin.append(self.help_gen_show_name(ind))
 
-        self.afk.update_num_citations()
+        self.afk.update_num_citations(self.help_get_next_index())
         self.main.pop_list(fin)
 
     def main_open_pdf(self):
@@ -294,7 +296,7 @@ class control:
         :return: Nothing
         """
         # Initialize export GUI
-        self.export = export_GUI(SIZE_EXP, self)
+        self.export = export_GUI(SIZE_EXP)
 
         # Reposition export GUI next to main GUI
         mainpos = self.main.pos()
@@ -374,13 +376,14 @@ class control:
 
     # Add functions
 
-    def show_add(self, name: str):
+    def show_add(self, name: str, path: str):
         """Shows the add GUI.
         :param name: Preassigned name of the new citation
         :return: Nothing
         """
         # Initialize add GUI
-        self.add = add_GUI(SIZE_ADD, self, name)
+        self.add = add_GUI(SIZE_ADD, name)
+        self.fp = path
 
         # Add connections
         self.add.accept.clicked.connect(self.add_new_citation)
@@ -424,7 +427,7 @@ class control:
                     self.main_sort_and_display_articles()
 
             # update number of citations in the GUI
-            self.afk.update_num_citations()
+            self.afk.update_num_citations(self.help_get_next_index())
             self.add.close()
 
         else:
@@ -506,9 +509,6 @@ class control:
                 show_dialog(error, 'Error!')
                 return False
         return True
-
-    def help_set_filepath(self, filep: str):
-        self.fp = filep
 
     def help_load_settings(self) -> dict:
         """Loads the settings from the setting JSON file, if it does not exist, it is created with standard settings.
@@ -605,6 +605,12 @@ class control:
             fin += self.all_articles[index].bibtex_to_string() + '\n'
 
         return fin
+
+    def help_move_window(self, window: QWidget):
+        self.screensize = QDesktopWidget().screenGeometry()
+        widget = window.geometry()
+        x = self.screensize.width() - widget.width()
+        window.move(x, 0)
 
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QGridLayout, QTextEdit, QCheckBox, \
-    QDesktopWidget, QMainWindow, QListWidget, QTableWidget, QTableWidgetItem, QTableView, QComboBox, \
-    QFileDialog, QAction, QColorDialog, QMessageBox
+    QMainWindow, QListWidget, QTableWidget, QTableWidgetItem, QTableView, QComboBox, QFileDialog, QAction,\
+    QColorDialog, QMessageBox
 
 from os import path
 
@@ -16,14 +16,12 @@ class afk_GUI(QWidget):
 
     # GUI that is always displayed in the top right corner
 
-    def __init__(self, size, color, control, num_cit):
+    def __init__(self, size, color, num_cit):
         super().__init__()
 
         # Setting up the main GUI
         self.setFixedSize(size[0], size[1])
-        self.control = control
         self.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
-        self.move_window()
         self.setWindowIcon(QIcon(LOGO_PATH))
 
         # Setting up the main button
@@ -33,27 +31,18 @@ class afk_GUI(QWidget):
 
         self.show()
 
-    def move_window(self):
-        """The afk window is moved to the top right corner and can be used from this position.
-        :return: Nothing
-        """
-        self.control.screensize = QDesktopWidget().screenGeometry()
-        widget = self.geometry()
-        x = self.control.screensize.width() - widget.width()
-        self.move(x, 0)
-
-    def update_num_citations(self):
+    def update_num_citations(self, number: int):
         """The number of citations in the citation list is displayed in the afk GUI.
         :return: Nothing
         """
-        self.button.setText(str(self.control.help_get_next_index()))
+        self.button.setText(str(number))
 
 
 class add_GUI(QWidget):
 
     # Displayed when an article should be added to the system
 
-    def __init__(self, wh, control, name):
+    def __init__(self, wh, name):
         super().__init__()
 
         # Setting up the side GUI
@@ -97,7 +86,6 @@ class add_GUI(QWidget):
         # Final init steps
         self.setLayout(grid)
         self.setWindowTitle(TITLE_ADD)
-        self.control = control
 
         self.show()
 
@@ -106,13 +94,12 @@ class main_GUI(QMainWindow):
 
     # Main Interaction Point
 
-    def __init__(self, wh, control, hide_explain, shortcuts):
+    def __init__(self, wh, hide_explain, shortcuts):
         super().__init__()
 
         # Setting up the side GUI
         self.setFixedSize(wh[0], wh[1])
         self.setWindowTitle(TITLE_MAIN)
-        self.control = control
         self.setWindowIcon(QIcon(LOGO_PATH))
 
         # Init of main window stuff
@@ -228,7 +215,7 @@ class change_article_GUI(QWidget):
 
     # Displayed when article information should be changed
 
-    def __init__(self, wh, control, dic, bibtex):
+    def __init__(self, wh, dic, bibtex):
         super().__init__()
 
         # Setting up the side GUI
@@ -264,7 +251,6 @@ class change_article_GUI(QWidget):
         # Final init steps
         self.setLayout(grid)
         self.setWindowTitle(TITLE_CHANGE)
-        self.control = control
 
         self.show()
 
@@ -273,13 +259,12 @@ class export_GUI(QWidget):
 
     # Displayed when citations should be exported
 
-    def __init__(self, wh, control):
+    def __init__(self, wh):
         super().__init__()
 
         # Setting up the side GUI
         self.setFixedSize(wh[0], wh[1])
         self.setWindowTitle(TITLE_EXPORT)
-        self.control = control
         self.setWindowIcon(QIcon(LOGO_PATH))
 
         grid = QGridLayout()
@@ -481,8 +466,8 @@ class settings_dialog(QWidget):
 
 
 class dnd_button(QPushButton):
-
     # QPushbutton with drag and drop functions overwritten
+    dropped = QtCore.pyqtSignal(str, str)
 
     def __init__(self, title, parent):
         super().__init__(title, parent)
@@ -496,8 +481,7 @@ class dnd_button(QPushButton):
             e.ignore()
 
     def dropEvent(self, e):
-        self.parent.control.show_add(e.mimeData().text().split(path.sep)[-1][:-4])
-        self.parent.control.help_set_filepath(e.mimeData().text()[7:])
+        self.dropped.emit(e.mimeData().text().split(path.sep)[-1][:-4], e.mimeData().text()[7:])
 
 
 def show_dialog(text, title):
@@ -513,5 +497,3 @@ def show_dialog(text, title):
     msgBox.setStandardButtons(QMessageBox.Ok)
     msgBox.buttonClicked.connect(msgBox.close)
     msgBox.exec()
-
-
