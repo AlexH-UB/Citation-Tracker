@@ -22,6 +22,23 @@ Create an easy to use drag and drop application that keeps track of your article
 
 ## User guide
 
+
+#### 0. Installation
+
+Install required python libraries:
+
+```python
+# pip install -r requirements.txt
+```
+
+Run the program:
+
+```python
+# python citation_tool.py
+```
+
+Close the program with the close all windows action (Standard shortcut -> Alt + Escape)
+
 ---
 
 #### 1. General

@@ -211,12 +211,25 @@ class control:
 
             label = self.change_art.nameedit.text()
             tags = self.change_art.tagsedit.text().split(',')
+            old_fp = self.all_articles[ind].get_path()
 
             # Init of new citation
-            cit = article(ind, label, self.all_articles[ind]['path'], tags, asctime(), bibtex_dict, 0)
+            cit = article(ind, label, old_fp, tags, asctime(), bibtex_dict, 0)
+            if self.all_articles[ind].get_bibtex() == cit.get_bibtex():
+                same_title = True
+            else:
+                same_title = False
             del self.all_articles[ind]
 
             if self.help_check_bibtex(bibtex_dict):
+                if not same_title:
+                    cit_title = cit.get_bibtex()["title"].lower().replace(" ", "_").replace(".", "").replace(",", "")
+                    if len(cit_title) > 50:
+                        cit_title = cit_title[:50]
+                    title = f'{cit.get_index()}_{cit_title}.pdf'
+                    cit.set_path(path.join(ARTICLE_SAVE, title))
+                    if not path.exists(cit.get_path()):
+                        rename(old_fp, cit.get_path())
                 self.all_articles[ind] = cit
                 self.help_dump_to_json()
                 self.main_sort_and_display_articles()
