@@ -309,7 +309,10 @@ class control:
         mainpos = self.main.pos()
         # Relocate the export window
         mainsize = self.main.geometry()
-        self.export.relocate(mainpos.x() + mainsize.width() + 6, mainpos.y() + 29)
+        if sys.platform == 'win32':
+            self.export.relocate(mainpos.x() + mainsize.width(), mainpos.y())
+        else:
+            self.export.relocate(mainpos.x() + mainsize.width() + 6, mainpos.y() + 29)
 
         # Button connections
         self.export.push_right.clicked.connect(self.exp_push_cit_right)
@@ -474,7 +477,10 @@ class control:
         mainpos = self.main.pos()
         # Relocate the export window
         mainsize = self.main.geometry()
-        self.settings_dialog.relocate(mainpos.x() + mainsize.width() + 6, mainpos.y() + 29)
+        if sys.platform == "win32":
+            self.settings_dialog.relocate(mainpos.x() + mainsize.width(), mainpos.y())
+        else:
+            self.settings_dialog.relocate(mainpos.x() + mainsize.width() + 6, mainpos.y() + 29)
 
         self.settings_dialog.cancel.clicked.connect(self.settings_dialog.close)
         self.settings_dialog.back.clicked.connect(lambda state, x=1: self.settings_dialog.pick_color(x))
