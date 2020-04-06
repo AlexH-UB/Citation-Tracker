@@ -56,13 +56,15 @@ OPEN_EXPORT = 'Ctrl+e'
 QUICK_COPY = 'Ctrl+c'
 SHOW_SET = 'Ctrl+q'
 CHANGE_ENT = 'Ctrl+d'
+CLOSE_WIND = 'Alt+Escape'
 
 
 SHORTCUTS = {'Move citation to export:': MOVE_RIGHT,
              'Open the export window:': OPEN_EXPORT,
              'Quick copy a citation:': QUICK_COPY,
              'Show the settings menu:': SHOW_SET,
-             'Change entry:': CHANGE_ENT}
+             'Change entry:': CHANGE_ENT,
+             'Close all windows:': CLOSE_WIND}
 
 
 STANDARD_SETTINGS = {'SIZE_MAIN': (1450, 650),

@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QGridLayout
     QColorDialog, QMessageBox
 
 from os import path
+import sys
 
 from PyQt5 import QtCore
 from PyQt5.QtGui import QFont, QKeySequence, QIcon
@@ -178,6 +179,9 @@ class main_GUI(QMainWindow):
         self.change_article = QAction('&Change entry')
         self.change_article.setShortcut(QKeySequence(shortcuts['Change entry:']))
 
+        self.close_all_windows = QAction('&Close all windows')
+        self.close_all_windows.setShortcut(QKeySequence(shortcuts['Close all windows:']))
+
         # Init menu bar
         article_menu = self.menuBar().addMenu('Articles')
         article_menu.addAction(self.quick_copy)
@@ -188,6 +192,7 @@ class main_GUI(QMainWindow):
         article_menu.addAction(self.move_right)
         article_menu.addSeparator()
         article_menu.addAction(self.show_settings)
+        article_menu.addAction(self.close_all_windows)
 
         maingrid.addWidget(self.citation_list, 1, 0)
         wid = QWidget(self)
@@ -481,7 +486,10 @@ class dnd_button(QPushButton):
             e.ignore()
 
     def dropEvent(self, e):
-        self.dropped.emit(e.mimeData().text().split(path.sep)[-1][:-4], e.mimeData().text()[7:])
+        if sys.platform == 'win32':
+            self.dropped.emit(e.mimeData().text().split('/')[-1][:-4], e.mimeData().text()[8:].replace('/', '\\'))
+        else:
+            self.dropped.emit(e.mimeData().text().split(path.sep)[-1][:-4], e.mimeData().text()[7:])
 
 
 def show_dialog(text, title):

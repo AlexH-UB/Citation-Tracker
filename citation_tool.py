@@ -72,6 +72,7 @@ class control:
         self.main.delete_article.triggered.connect(self.main_delete_row)
         self.main.show_settings.triggered.connect(self.show_settings)
         self.main.change_article.triggered.connect(self.main_show_change_article)
+        self.main.close_all_windows.triggered.connect(self.main_close_all)
 
     def main_search(self):
         """Search for a string in all articles name, tags and BibTex citation. Creates a filtered list of articles and
@@ -289,6 +290,12 @@ class control:
         else:
             startfile(filepath)
 
+    def main_close_all(self):
+        """Terminates the whole program.
+        :return: Nothing
+        """
+        app.closeAllWindows()
+
     # Export functions
 
     def show_export(self):
@@ -419,7 +426,8 @@ class control:
                         cit_title = cit_title[:50]
                     title = f'{cit.get_index()}_{cit_title}.pdf'
                     cit.set_path(path.join(ARTICLE_SAVE, title))
-                    rename(self.fp, cit.get_path())
+                    if not path.exists(cit.get_path()):
+                        rename(self.fp, cit.get_path())
                 self.all_articles[str(cit.get_index())] = cit
                 self.help_dump_to_json()
                 self.currently_displayed.append(cit.get_index())
