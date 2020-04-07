@@ -480,16 +480,18 @@ class dnd_button(QPushButton):
         self.parent = parent
 
     def dragEnterEvent(self, e):
-        if e.mimeData().text()[-4:] == '.pdf':
+        urls = e.mimeData().urls()
+        if len(urls) == 1 and urls[0].toString()[-4:] == '.pdf':
             e.accept()
         else:
             e.ignore()
 
     def dropEvent(self, e):
+        url = e.mimeData().urls()[0].toString()
         if sys.platform == 'win32':
-            self.dropped.emit(e.mimeData().text().split('/')[-1][:-4], e.mimeData().text()[8:].replace('/', '\\'))
+            self.dropped.emit(url.split('/')[-1][:-4], url[8:].replace('/', '\\'))
         else:
-            self.dropped.emit(e.mimeData().text().split(path.sep)[-1][:-4], e.mimeData().text()[7:])
+            self.dropped.emit(url.split(path.sep)[-1][:-4], url[7:])
 
 
 def show_dialog(text, title):
