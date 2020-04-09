@@ -69,7 +69,8 @@ SHORTCUTS = {'Move citation to export:': MOVE_RIGHT,
              'Show the settings menu:': SHOW_SET,
              'Change entry:': CHANGE_ENT,
              'Close all windows:': CLOSE_WIND,
-             'Open notes:': OPEN_NOTE}
+             'Open notes:': OPEN_NOTE
+             }
 
 
 STANDARD_SETTINGS = {'SIZE_MAIN': (1450, 650),

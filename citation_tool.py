@@ -75,6 +75,8 @@ class control:
         self.main.change_article.triggered.connect(self.main_show_change_article)
         self.main.close_all_windows.triggered.connect(self.main_close_all)
         self.main.open_notes.triggered.connect(self.main_open_notes)
+        self.main.open_notes_folder.triggered.connect(self.help_open_notes_folder)
+        self.main.open_arts_folder.triggered.connect(self.help_open_article_folder)
 
     def main_search(self):
         """Search for a string in all articles name, tags and BibTex citation. Creates a filtered list of articles and
@@ -683,6 +685,18 @@ class control:
         # Windows
         else:
             startfile(filepath)
+
+    def help_open_notes_folder(self):
+        """Opens the folder that contains the notes
+        :return: Nothing
+        """
+        self.help_open_file(NOTES_PATH)
+
+    def help_open_article_folder(self):
+        """Opens the folder that contains the articles
+        :return: Nothing
+        """
+        self.help_open_file(ARTICLE_SAVE)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -185,6 +185,9 @@ class main_GUI(QMainWindow):
         self.open_notes = QAction('&Open notes')
         self.open_notes.setShortcut(QKeySequence(shortcuts['Open notes:']))
 
+        self.open_notes_folder = QAction('&Open notes folder')
+        self.open_arts_folder = QAction('&Open article folder')
+
         # Init menu bar
         article_menu = self.menuBar().addMenu('Articles')
         article_menu.addAction(self.quick_copy)
@@ -194,6 +197,9 @@ class main_GUI(QMainWindow):
         article_menu.addSeparator()
         article_menu.addAction(self.show_exp)
         article_menu.addAction(self.move_right)
+        article_menu.addSeparator()
+        article_menu.addAction(self.open_notes_folder)
+        article_menu.addAction(self.open_arts_folder)
         article_menu.addSeparator()
         article_menu.addAction(self.show_settings)
         article_menu.addAction(self.close_all_windows)
