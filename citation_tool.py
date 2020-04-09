@@ -328,11 +328,14 @@ class control:
                     file.write(' ')
 
                 selected_art.set_note_path(note_path_sel)
+                self.help_dump_to_json()
 
             if not path.exists(note_path_sel):
                 selected_art.set_note_path('')
-                show_dialog('The notes file was removed from the folder! and will be removed from the article file'
+                show_dialog('The notes file was removed from the folder! and will be removed from the article file.'
                             , 'Error!')
+                self.help_dump_to_json()
+
             else:
                 self.help_open_file(note_path_sel)
 

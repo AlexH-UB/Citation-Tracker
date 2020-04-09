@@ -93,6 +93,12 @@ function. Further, you can open the article PDFs by double clicking the article 
 its relevance score will increase, resulting in a ranking based on how much you opened/used the articles when you sort 
 the articles for relevance.
 
+Notes can be added to your article in form of a text document that is linked to the article. It can be opened directly
+from the Main interaction point (Standard shortcut -> Ctrl+n)
+
+The article folder containing all articles and the notes folder containing a collection of all notes can be opened via
+the menu. 
+
 ---
 
 #### 4. Change article information
