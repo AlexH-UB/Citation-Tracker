@@ -77,4 +77,5 @@ STANDARD_SETTINGS = {'SIZE_MAIN': (1450, 650),
                      'SIZE_AFK': (50, 50),
                      'BUTTON_COLOR': ("#708090", "#FFFFFF"),
                      'HIDE_EXPLAIN': False,
-                     'SHORTCUTS': SHORTCUTS}
+                     'SHORTCUTS': SHORTCUTS,
+                     'NOTES_FORMAT': 'Text'}

@@ -382,10 +382,19 @@ class settings_dialog(QWidget):
         self.checkbox.setChecked(hide_explain)
         grid.addWidget(self.checkbox, 5, 1)
 
+        grid.addWidget(QLabel('Notes format:'), 6, 0)
+        self.notes_format = QComboBox()
+        self.notes_format.addItem("Text")
+        self.notes_format.addItem("Markdown")
+        grid.addWidget(self.notes_format, 6, 1)
+        index = self.notes_format.findText(settings['NOTES_FORMAT'], QtCore.Qt.MatchFixedString)
+        if index >= 0:
+            self.notes_format.setCurrentIndex(index)
+
         short = QLabel('Shortcuts:')
         short.setFont(font1)
         short.setAlignment(Qt.AlignBottom)
-        grid.addWidget(short, 6, 0)
+        grid.addWidget(short, 7, 0)
 
         self.table = QTableWidget(len(settings['SHORTCUTS'].keys()), 2)
         self.table.verticalHeader().setVisible(False)
@@ -405,15 +414,15 @@ class settings_dialog(QWidget):
             item.setTextAlignment(Qt.AlignVCenter)
             c += 1
 
-        grid.addWidget(self.table, 7, 0, 3, 3)
+        grid.addWidget(self.table, 8, 0, 3, 3)
 
         self.cancel = QPushButton('Cancel')
         self.cancel.setFixedWidth(125)
 
         self.save = QPushButton('Save')
         self.save.setFixedWidth(125)
-        grid.addWidget(self.cancel, 10, 0)
-        grid.addWidget(self.save, 10, 2)
+        grid.addWidget(self.cancel, 11, 0)
+        grid.addWidget(self.save, 11, 2)
 
         self.setLayout(grid)
         self.show()
@@ -458,6 +467,7 @@ class settings_dialog(QWidget):
 
         dic['BUTTON_COLOR'] = (self.back.text(), self.font.text())
         dic['HIDE_EXPLAIN'] = self.checkbox.isChecked()
+        dic['NOTES_FORMAT'] = str(self.notes_format.currentText())
 
         s_dic = {}
         save = None

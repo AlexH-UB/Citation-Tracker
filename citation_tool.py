@@ -534,15 +534,39 @@ class control:
         """Changes the settings of the windows to user input settings in the settings window.
         :return: Nothing
         """
+
+        format = self.settings['NOTES_FORMAT']
         if self.settings_dialog.ret_settings() != {}:
             self.settings = self.settings_dialog.ret_settings()
         else:
             return
         with open(SETTINGS_JSON, "w") as file:
             json.dump(self.settings, file)
+
+        new_format = self.settings['NOTES_FORMAT']
+        if format != new_format:
+            self.help_toggle_format()
         show_dialog("Files were successfully saved!", 'Success!')
 
     # Helper functions
+
+    def help_toggle_format(self):
+        """Changes the standard note format between Markdown and plain Text files.
+        :return: Nothing
+        """
+
+        for art in self.all_articles.values():
+            old_path = art.get_note_path()
+            if old_path != '':
+                if old_path[-1] == 't':
+                    new_path = f'{old_path[:-4]}.md'
+                else:
+                    new_path = f'{old_path[:-3]}.txt'
+
+                rename(old_path, new_path)
+                art.set_note_path(new_path)
+
+        self.help_dump_to_json()
 
     def help_dump_to_json(self):
         """All citations are saved in a JSON file.
