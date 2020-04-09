@@ -128,6 +128,7 @@ Copy button to copy all citations to your clipboard or create a BibTex file (.bi
 #### 6. Settings
 
 Customize your window sizes, their looks and the shortcuts using the settings window (Standard shortcut -> Ctrl+q).
+You can also change your standard note format between Markdown and plain text.
 
 ![Change the settings](imgs/settings_GUI.png)
 ---
