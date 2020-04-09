@@ -14,7 +14,7 @@ if sys.platform == "win32":
 
 # Own stuff
 from constants import ARTICLE_SAVE, SAVE_JSON, SIZE_ADD, SIZE_EXP, BASE_URL, SIZE_SET, SETTINGS_JSON, STANDARD_SETTINGS,\
-    SIZE_CHA
+    SIZE_CHA, NOTES_PATH, GENERAL
 from core import article
 from GUI import main_GUI, afk_GUI, add_GUI, export_GUI, settings_dialog, show_dialog, change_article_GUI
 
@@ -24,6 +24,7 @@ class control:
     # Basic initialization
 
     def __init__(self):
+
         # Init articles
         self.all_articles = self.help_load_articles()
         self.settings = self.help_load_settings()
@@ -73,6 +74,7 @@ class control:
         self.main.show_settings.triggered.connect(self.show_settings)
         self.main.change_article.triggered.connect(self.main_show_change_article)
         self.main.close_all_windows.triggered.connect(self.main_close_all)
+        self.main.open_notes.triggered.connect(self.main_open_notes)
 
     def main_search(self):
         """Search for a string in all articles name, tags and BibTex citation. Creates a filtered list of articles and
@@ -291,23 +293,46 @@ class control:
         self.help_dump_to_json()
         filepath = self.all_articles[selected_art].get_path()
 
-        # linux
-        if sys.platform == 'linux':
-            subprocess.call(["xdg-open", filepath])
-
-        # macOS
-        elif sys.platform == 'Darwin':
-            subprocess.call(('open', filepath))
-
-        # Windows
-        else:
-            startfile(filepath)
+        self.help_open_file(filepath)
 
     def main_close_all(self):
         """Terminates the whole program.
         :return: Nothing
         """
         app.closeAllWindows()
+
+    def main_open_notes(self):
+        """Open the notes for a specific article
+        :return: Nothing
+        """
+
+        # If an article is selected
+        if self.main.citation_list.currentRow() >= 0:
+
+            # Get the article object and get the note_path of the object
+            selected_art = self.all_articles[self.main.citation_list.selectedItems()[0].text()]
+            note_path_sel = selected_art.get_note_path()
+
+            # If the note path does not exist
+            if note_path_sel == '':
+
+                norm_path = selected_art.get_path()
+                name = f'{norm_path.split(path.sep)[-1][:-4]}.txt'
+                note_path_sel = path.join(NOTES_PATH, name)
+
+                # Create new txt notes file in the NOTES directory
+
+                with open(note_path_sel, 'w') as file:
+                    file.write(' ')
+
+                selected_art.set_note_path(note_path_sel)
+
+            if not path.exists(note_path_sel):
+                selected_art.set_note_path('')
+                show_dialog('The notes file was removed from the folder! and will be removed from the article file'
+                            , 'Error!')
+            else:
+                self.help_open_file(note_path_sel)
 
     # Export functions
 
@@ -562,6 +587,13 @@ class control:
         :return: a dictionary with all citations as citation objects or an empty dictionary if no save file was found.
         """
         # Create save folder and json save file if not there
+        if not path.exists(GENERAL):
+            mkdir(GENERAL)
+
+        # Init notes directory
+        if not path.exists(NOTES_PATH):
+            mkdir(NOTES_PATH)
+
         if not path.exists(ARTICLE_SAVE):
             mkdir(ARTICLE_SAVE)
             with open(SAVE_JSON, 'w') as f:
@@ -578,7 +610,7 @@ class control:
                             dic[ind] = article(arts['id'], arts['name'],
                                                arts['path'], arts['tags'],
                                                arts['access'], arts['bibtex'],
-                                               arts['relevance'])
+                                               arts['relevance'], arts['note'])
                         return dic
         return {}
 
@@ -639,6 +671,18 @@ class control:
         x = self.screensize.width() - widget.width()
         window.move(x, 0)
 
+    def help_open_file(self, filepath):
+        # linux
+        if sys.platform == 'linux':
+            subprocess.call(["xdg-open", filepath])
+
+        # macOS
+        elif sys.platform == 'Darwin':
+            subprocess.call(('open', filepath))
+
+        # Windows
+        else:
+            startfile(filepath)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

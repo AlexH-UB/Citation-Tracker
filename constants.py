@@ -1,5 +1,4 @@
 from os.path import expanduser, join, sep
-from random import choice
 
 # Constants
 
@@ -44,11 +43,15 @@ BASE_URL = 'http://dx.doi.org/'
 
 # Folders
 HOME = expanduser("~")
-ARTICLE_SAVE = join(HOME, ".articles")
-SAVE_JSON = join(ARTICLE_SAVE, "articles.json")
-SETTINGS_JSON = join(ARTICLE_SAVE, "settings.json")
+GENERAL = join(HOME, ".article_tracker")
+ARTICLE_SAVE = join(GENERAL, "articles")
+NOTES_PATH = join(GENERAL, 'notes')
+
+SAVE_JSON = join(GENERAL, "articles.json")
+SETTINGS_JSON = join(GENERAL, "settings.json")
 IMAGE_PATH = 'imgs' + sep
 LOGO_PATH = join(IMAGE_PATH, 'logo.png')
+
 
 # Standard Shortcuts
 MOVE_RIGHT = 'Ctrl+x'
@@ -57,6 +60,7 @@ QUICK_COPY = 'Ctrl+c'
 SHOW_SET = 'Ctrl+q'
 CHANGE_ENT = 'Ctrl+d'
 CLOSE_WIND = 'Alt+Escape'
+OPEN_NOTE = 'Ctrl+n'
 
 
 SHORTCUTS = {'Move citation to export:': MOVE_RIGHT,
@@ -64,7 +68,8 @@ SHORTCUTS = {'Move citation to export:': MOVE_RIGHT,
              'Quick copy a citation:': QUICK_COPY,
              'Show the settings menu:': SHOW_SET,
              'Change entry:': CHANGE_ENT,
-             'Close all windows:': CLOSE_WIND}
+             'Close all windows:': CLOSE_WIND,
+             'Open notes:': OPEN_NOTE}
 
 
 STANDARD_SETTINGS = {'SIZE_MAIN': (1450, 650),

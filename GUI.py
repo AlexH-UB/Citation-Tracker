@@ -182,10 +182,14 @@ class main_GUI(QMainWindow):
         self.close_all_windows = QAction('&Close all windows')
         self.close_all_windows.setShortcut(QKeySequence(shortcuts['Close all windows:']))
 
+        self.open_notes = QAction('&Open notes')
+        self.open_notes.setShortcut(QKeySequence(shortcuts['Open notes:']))
+
         # Init menu bar
         article_menu = self.menuBar().addMenu('Articles')
         article_menu.addAction(self.quick_copy)
         article_menu.addAction(self.change_article)
+        article_menu.addAction(self.open_notes)
         article_menu.addAction(self.delete_article)
         article_menu.addSeparator()
         article_menu.addAction(self.show_exp)

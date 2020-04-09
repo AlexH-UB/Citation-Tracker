@@ -1,6 +1,6 @@
 class article:
 
-    def __init__(self, index: int, name: str, path: str, tags: list, access, bibtex: dict, relevance: int):
+    def __init__(self, index: int, name: str, path: str, tags: list, access, bibtex: dict, relevance: int, note_path: str = ''):
         """An article is the basic storing unit of the tool.
 
         :param index: all articles are indexed with numbers in ascending order
@@ -18,6 +18,7 @@ class article:
         self.access = access
         self.bibtex = bibtex
         self.relevance = relevance
+        self.note_path = note_path
 
     def get_index(self) -> int:
         """Returns the index of the article which is the identifier.
@@ -78,7 +79,8 @@ class article:
                 'tags': self.tags,
                 'access': self.access,
                 'bibtex': self.bibtex,
-                'relevance': self.relevance
+                'relevance': self.relevance,
+                'note': self.note_path
                 }
 
     def bibtex_to_string(self) -> str:
@@ -96,3 +98,11 @@ class article:
         first = first[:-4]
         first += ' }'
         return first
+
+    def get_note_path(self):
+        """Returns path to the notes txt file of an article"""
+        return self.note_path
+
+    def set_note_path(self, note_path: str):
+        """Sets the path to the notes txt file of an article"""
+        self.note_path = note_path
