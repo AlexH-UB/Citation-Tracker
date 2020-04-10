@@ -319,7 +319,10 @@ class control:
             if note_path_sel == '':
 
                 norm_path = selected_art.get_path()
-                name = f'{norm_path.split(path.sep)[-1][:-4]}.txt'
+                if self.settings['NOTES_FORMAT'] == "Text":
+                    name = f'{norm_path.split(path.sep)[-1][:-4]}.txt'
+                else:
+                    name = f'{norm_path.split(path.sep)[-1][:-4]}.md'
                 note_path_sel = path.join(NOTES_PATH, name)
 
                 # Create new txt notes file in the NOTES directory
