@@ -99,7 +99,7 @@ class main_GUI(QMainWindow):
         super().__init__()
 
         # Setting up the side GUI
-        self.setFixedSize(wh[0], wh[1])
+        self.resize(wh[0], wh[1])
         self.setWindowTitle(TITLE_MAIN)
         self.setWindowIcon(QIcon(LOGO_PATH))
 
@@ -111,7 +111,8 @@ class main_GUI(QMainWindow):
         toplayout.setAlignment(Qt.AlignRight)
         maingrid.addLayout(toplayout, 0, 0)
 
-        self.searchbar = QLineEdit("Search..")
+        self.searchbar = QLineEdit()
+        self.searchbar.setPlaceholderText("Search..")
         self.combo = QComboBox()
         self.combo.addItem('Index ↓')
         self.combo.addItem('Index ↑')

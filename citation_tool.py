@@ -355,7 +355,7 @@ class control:
         mainpos = self.main.pos()
         # Relocate the export window
         mainsize = self.main.geometry()
-        if sys.platform == 'win32':
+        if sys.platform == 'win32' or sys.platform == 'darwin':
             self.export.relocate(mainpos.x() + mainsize.width(), mainpos.y())
         else:
             self.export.relocate(mainpos.x() + mainsize.width() + 6, mainpos.y() + 29)
@@ -523,7 +523,7 @@ class control:
         mainpos = self.main.pos()
         # Relocate the export window
         mainsize = self.main.geometry()
-        if sys.platform == "win32":
+        if sys.platform == "win32" or sys.platform == 'darwin':
             self.settings_dialog.relocate(mainpos.x() + mainsize.width(), mainpos.y())
         else:
             self.settings_dialog.relocate(mainpos.x() + mainsize.width() + 6, mainpos.y() + 29)
@@ -550,6 +550,7 @@ class control:
         if format != new_format:
             self.help_toggle_format()
         show_dialog("Files were successfully saved!", 'Success!')
+        self.settings_dialog.close()
 
     # Helper functions
 
@@ -709,7 +710,7 @@ class control:
             subprocess.call(["xdg-open", filepath])
 
         # macOS
-        elif sys.platform == 'Darwin':
+        elif sys.platform == 'darwin':
             subprocess.call(('open', filepath))
 
         # Windows
